@@ -180,7 +180,7 @@ export function Admin() {
                 {hasPoster(m) && (
                   <img src={posterSrc(m)} alt="" className="thumb" onError={usePosterFallback} />
                 )}
-                <span className="thumb-fallback" aria-hidden="true">Poster unavailable</span>
+                <span className="thumb-fallback" aria-hidden="true" />
               </div>
               <div className="info">
                 <strong>{m.title}</strong>
@@ -272,13 +272,14 @@ export function Admin() {
           position: absolute;
           inset: 0;
           display: none;
-          place-items: center;
-          padding: 0.35rem;
-          text-align: center;
-          color: var(--accent-2);
-          font-size: 0.58rem;
-          font-weight: 800;
-          line-height: 1.1;
+          background:
+            repeating-linear-gradient(
+              90deg,
+              rgba(255, 255, 255, 0.12) 0 8px,
+              transparent 8px 13px
+            ),
+            linear-gradient(160deg, rgba(255, 107, 53, 0.18), transparent 48%),
+            #101219;
         }
         .poster-fallback-active .thumb-fallback {
           display: grid;

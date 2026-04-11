@@ -68,9 +68,7 @@ export function Profile() {
                       onError={usePosterFallback}
                     />
                   )}
-                  <span className="pr-poster-fallback" aria-hidden="true">
-                    Poster unavailable
-                  </span>
+                  <span className="pr-poster-fallback" aria-hidden="true" />
                 </span>
                 <div>
                   <strong>{r.movieId?.title || 'Movie'}</strong>
@@ -172,13 +170,14 @@ export function Profile() {
           position: absolute;
           inset: 0;
           display: none;
-          place-items: center;
-          padding: 0.3rem;
-          text-align: center;
-          color: var(--accent-2);
-          font-size: 0.52rem;
-          font-weight: 800;
-          line-height: 1.1;
+          background:
+            repeating-linear-gradient(
+              90deg,
+              rgba(255, 255, 255, 0.12) 0 8px,
+              transparent 8px 13px
+            ),
+            linear-gradient(160deg, rgba(255, 107, 53, 0.18), transparent 48%),
+            #101219;
         }
         .poster-fallback-active .pr-poster-fallback {
           display: grid;

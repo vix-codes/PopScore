@@ -21,7 +21,10 @@ export function MovieCard({ movie }) {
             />
           )}
           <div className="poster-fallback" aria-hidden="true">
-            <span>Poster unavailable</span>
+            <span />
+            <span />
+            <span />
+            <span />
           </div>
           <div className="poster-shine" />
         </div>
@@ -70,23 +73,39 @@ export function MovieCard({ movie }) {
           position: absolute;
           inset: 0;
           display: none;
-          place-items: center;
-          align-content: center;
-          gap: 0.7rem;
-          padding: 1.25rem;
-          text-align: center;
+          grid-template-rows: 1.2fr 0.7fr 1fr 0.55fr;
+          gap: 0.75rem;
+          padding: 1.4rem;
           background:
-            linear-gradient(160deg, rgba(255, 107, 53, 0.16), transparent 48%),
+            linear-gradient(160deg, rgba(255, 107, 53, 0.18), transparent 42%),
+            linear-gradient(20deg, transparent 45%, rgba(247, 201, 72, 0.12), transparent 70%),
             #101219;
           color: var(--text);
         }
         .poster-fallback span {
-          font-family: var(--font-display);
-          font-size: clamp(0.95rem, 1.4vw, 1.15rem);
-          font-weight: 800;
-          line-height: 1.15;
-          color: var(--accent-2);
-          text-transform: uppercase;
+          border-radius: 8px;
+          background:
+            repeating-linear-gradient(
+              90deg,
+              rgba(255, 255, 255, 0.12) 0 12px,
+              transparent 12px 20px
+            ),
+            rgba(255, 255, 255, 0.06);
+          opacity: 0.8;
+        }
+        .poster-fallback span:nth-child(2) {
+          width: 76%;
+          justify-self: end;
+          opacity: 0.55;
+        }
+        .poster-fallback span:nth-child(3) {
+          width: 88%;
+          align-self: end;
+          opacity: 0.7;
+        }
+        .poster-fallback span:nth-child(4) {
+          width: 58%;
+          opacity: 0.5;
         }
         .poster-fallback-active .poster-fallback {
           display: grid;
