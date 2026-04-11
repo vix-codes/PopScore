@@ -35,7 +35,7 @@ export function ReviewForm({
         maxLength={2000}
       />
       <button type="submit" className="btn btn-primary" disabled={disabled}>
-        {disabled ? 'Saving…' : submitLabel}
+        {disabled ? 'Saving...' : submitLabel}
       </button>
       <style>{`
         .review-form {

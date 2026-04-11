@@ -1,10 +1,12 @@
-export function Loader({ label = 'Loading…' }) {
+import { PopKernelIcon } from './PopKernelIcon.jsx';
+
+export function Loader({ label = 'Loading...' }) {
   return (
     <div className="loader-wrap" aria-busy="true" aria-label={label}>
       <div className="loader-popcorn">
-        <span>🍿</span>
-        <span>🍿</span>
-        <span>🍿</span>
+        <span><PopKernelIcon /></span>
+        <span><PopKernelIcon /></span>
+        <span><PopKernelIcon /></span>
       </div>
       <p className="loader-text">{label}</p>
       <style>{`
@@ -21,7 +23,7 @@ export function Loader({ label = 'Loading…' }) {
           gap: 0.35rem;
         }
         .loader-popcorn span {
-          font-size: 1.75rem;
+          color: var(--accent-2);
           animation: bounce 0.6s ease infinite alternate;
         }
         .loader-popcorn span:nth-child(2) {

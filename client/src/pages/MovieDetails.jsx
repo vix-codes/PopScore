@@ -4,6 +4,7 @@ import api from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { PopcornScore } from '../components/PopcornRating.jsx';
 import { PopMeter } from '../components/PopMeter.jsx';
+import { PopKernelIcon } from '../components/PopKernelIcon.jsx';
 import { ReviewList } from '../components/ReviewList.jsx';
 import { ReviewForm } from '../components/ReviewForm.jsx';
 import { DetailSkeleton } from '../components/Loader.jsx';
@@ -21,7 +22,7 @@ function RatingBreakdown({ breakdown, total }) {
         return (
           <div key={n} className="bd-row">
             <span className="bd-label">
-              {n}🍿
+              {n}<PopKernelIcon size={14} />
             </span>
             <div className="bd-bar">
               <div className="bd-fill" style={{ width: `${pct}%` }} />
@@ -53,6 +54,9 @@ function RatingBreakdown({ breakdown, total }) {
         .bd-label {
           font-size: 0.85rem;
           color: var(--text-muted);
+          display: inline-flex;
+          align-items: center;
+          gap: 0.15rem;
         }
         .bd-bar {
           height: 8px;
@@ -188,7 +192,7 @@ export function MovieDetails() {
           </div>
           {user && (
             <button type="button" className="btn fav-btn" onClick={toggleFav} disabled={favBusy}>
-              {isFav ? '★ Saved' : '☆ Save to favorites'}
+              {isFav ? 'Saved' : 'Save to favorites'}
             </button>
           )}
         </div>
@@ -196,7 +200,7 @@ export function MovieDetails() {
           <h1 className="film-title">{movie.title}</h1>
           <p className="film-meta">
             {movie.year}
-            {movie.genre?.length ? ` · ${movie.genre.join(' · ')}` : ''}
+            {movie.genre?.length ? ` - ${movie.genre.join(' - ')}` : ''}
           </p>
           <div className="score-row">
             <PopcornScore value={movie.avgRating} reviewCount={movie.reviewCount} />
@@ -216,9 +220,9 @@ export function MovieDetails() {
           </div>
         )}
         {user && myReview && (
-          <p className="hint muted">You reviewed this film — edit or delete from the list below.</p>
+          <p className="hint muted">You reviewed this film - edit or delete from the list below.</p>
         )}
-        {!user && <p className="hint muted">Log in to rate with 🍿 and like reviews.</p>}
+        {!user && <p className="hint muted">Log in to rate with popcorn and like reviews.</p>}
         <ReviewList
           movieId={id}
           reviews={reviews}

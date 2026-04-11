@@ -54,11 +54,11 @@ export function ReviewList({
   };
 
   if (loading) {
-    return <p className="muted">Loading reviews…</p>;
+    return <p className="muted">Loading reviews...</p>;
   }
 
   if (!reviews?.length) {
-    return <p className="muted">No reviews yet. Be the first with your 🍿 take!</p>;
+    return <p className="muted">No reviews yet. Be the first with your popcorn take!</p>;
   }
 
   return (
@@ -91,7 +91,7 @@ export function ReviewList({
                     onClick={() => handleLike(r._id)}
                     disabled={!user || liking[r._id]}
                   >
-                    👍 {r.likes ?? 0}
+                    Like {r.likes ?? 0}
                   </button>
                   {mine && (
                     <>
@@ -104,7 +104,7 @@ export function ReviewList({
                         onClick={() => handleDelete(r._id)}
                         disabled={deleting === r._id}
                       >
-                        {deleting === r._id ? '…' : 'Delete'}
+                        {deleting === r._id ? '...' : 'Delete'}
                       </button>
                     </>
                   )}

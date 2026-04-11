@@ -39,7 +39,7 @@ export function Favorites() {
           ))}
         </div>
       ) : (
-        <p className="muted">No favorites yet. Tap “Save to favorites” on a movie you love.</p>
+        <p className="muted">No favorites yet. Tap "Save to favorites" on a movie you love.</p>
       )}
       <style>{`
         .lead {

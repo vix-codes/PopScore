@@ -4,6 +4,7 @@ import api from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { PopcornRating } from '../components/PopcornRating.jsx';
 import { Loader } from '../components/Loader.jsx';
+import { PopKernelCluster } from '../components/PopKernelIcon.jsx';
 import { hasPoster, hasRealPoster, posterFallbackClass, posterSrc, usePosterFallback } from '../utils/poster.js';
 
 function SentimentBadge({ sentiment }) {
@@ -43,7 +44,7 @@ export function Profile() {
     <div className="page profile-page animate-in">
       <h1 className="section-title">Your profile</h1>
       <div className="profile-card card">
-        <div className="avatar">🍿</div>
+        <div className="avatar"><PopKernelCluster count={3} size={24} /></div>
         <div>
           <h2 className="uname">{user?.username}</h2>
           <p className="email">{user?.email}</p>
@@ -107,6 +108,7 @@ export function Profile() {
           align-items: center;
           justify-content: center;
           font-size: 2rem;
+          color: var(--accent-2);
         }
         .uname {
           margin: 0 0 0.25rem;

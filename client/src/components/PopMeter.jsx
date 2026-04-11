@@ -1,5 +1,7 @@
+import { PopKernelCluster } from './PopKernelIcon.jsx';
+
 /**
- * Popmeter: average rating (1–5) as % of max, tiered as burnt / plain / golden.
+ * Popmeter: average rating (1-5) as % of max, tiered as burnt / plain / golden.
  * Works for any movie from API data; upcoming = release year > current calendar year.
  */
 export function computePopmeter(avgRating, reviewCount, year) {
@@ -15,8 +17,6 @@ export function computePopmeter(avgRating, reviewCount, year) {
       tier: 'unrated',
       label: 'No popmeter yet',
       shortLabel: 'Unrated',
-      icon: '📽️',
-      iconSecondary: null,
       upcoming,
       count,
     };
@@ -29,8 +29,6 @@ export function computePopmeter(avgRating, reviewCount, year) {
       tier: 'golden',
       label: 'Golden popcorn',
       shortLabel: 'Golden',
-      icon: '✨',
-      iconSecondary: '🍿',
       upcoming,
       count,
     };
@@ -41,8 +39,6 @@ export function computePopmeter(avgRating, reviewCount, year) {
       tier: 'plain',
       label: 'Plain popcorn',
       shortLabel: 'Plain',
-      icon: '🍿',
-      iconSecondary: null,
       upcoming,
       count,
     };
@@ -52,8 +48,6 @@ export function computePopmeter(avgRating, reviewCount, year) {
     tier: 'burnt',
     label: 'Burnt popcorn',
     shortLabel: 'Burnt',
-    icon: '🔥',
-    iconSecondary: '🍿',
     upcoming,
     count,
   };
@@ -61,12 +55,13 @@ export function computePopmeter(avgRating, reviewCount, year) {
 
 export function PopMeter({ avgRating, reviewCount, year, compact = false }) {
   const s = computePopmeter(avgRating, reviewCount, year);
+  const kernelCount = s.tier === 'unrated' ? 1 : s.tier === 'plain' ? 2 : 3;
 
   const hint =
     s.count === 0
       ? s.upcoming
-        ? 'Upcoming title — meter fills as reviews arrive'
-        : 'Average of all 🍿 reviews (0% until first review)'
+        ? 'Upcoming title - meter fills as reviews arrive'
+        : 'Average of all popcorn reviews (0% until first review)'
       : `Average ${(Math.round((Number(avgRating) || 0) * 10) / 10).toFixed(1)} / 5 across ${s.count} review${s.count === 1 ? '' : 's'}`;
 
   return (
@@ -80,8 +75,7 @@ export function PopMeter({ avgRating, reviewCount, year, compact = false }) {
     >
       <div className="popmeter-top">
         <div className="popmeter-icons" aria-hidden>
-          <span className="popmeter-icon-main">{s.icon}</span>
-          {s.iconSecondary ? <span className="popmeter-icon-sub">{s.iconSecondary}</span> : null}
+          <PopKernelCluster count={kernelCount} size={compact ? 14 : 17} />
         </div>
         <div className="popmeter-text">
           <span className="popmeter-name">Popmeter</span>
@@ -89,7 +83,7 @@ export function PopMeter({ avgRating, reviewCount, year, compact = false }) {
         </div>
         <div className="popmeter-pct-wrap">
           {s.upcoming ? <span className="popmeter-soon">Upcoming</span> : null}
-          <span className="popmeter-pct">{s.count ? `${s.percentage}%` : '—'}</span>
+          <span className="popmeter-pct">{s.count ? `${s.percentage}%` : '-'}</span>
         </div>
       </div>
       <div className="popmeter-track">
@@ -135,16 +129,11 @@ export function PopMeter({ avgRating, reviewCount, year, compact = false }) {
         .popmeter-icons {
           display: flex;
           align-items: center;
-          gap: 0.1rem;
-          font-size: 1.15rem;
+          color: var(--accent-2);
           line-height: 1;
         }
         .popmeter--compact .popmeter-icons {
-          font-size: 0.95rem;
-        }
-        .popmeter-icon-sub {
-          font-size: 0.85em;
-          opacity: 0.9;
+          transform: scale(0.95);
         }
         .popmeter-text {
           flex: 1;

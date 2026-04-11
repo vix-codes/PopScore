@@ -153,7 +153,7 @@ export function Admin() {
 
   return (
     <div className="page admin-page animate-in">
-      <h1 className="section-title">Admin — movies</h1>
+      <h1 className="section-title">Admin - movies</h1>
       <p className="lead">Add, edit, or remove titles in the catalog.</p>
 
       <div className="admin-form card">
@@ -214,7 +214,7 @@ export function Admin() {
           </div>
           <div className="full actions">
             <button type="submit" className="btn btn-primary" disabled={busy}>
-              {busy ? 'Saving…' : editingId ? 'Update movie' : 'Create movie'}
+            {busy ? 'Saving...' : editingId ? 'Update movie' : 'Create movie'}
             </button>
             {editingId && (
               <button type="button" className="btn btn-ghost" onClick={cancelEdit} disabled={busy}>
@@ -241,7 +241,7 @@ export function Admin() {
               <div className="info">
                 <strong>{m.title}</strong>
                 <span className="meta">
-                  {m.year} · {(m.genre || []).join(', ')}
+                  {m.year} - {(m.genre || []).join(', ')}
                 </span>
                 <PopMeter avgRating={m.avgRating} reviewCount={m.reviewCount} year={m.year} compact />
               </div>

@@ -1,3 +1,5 @@
+import { PopKernelIcon } from './PopKernelIcon.jsx';
+
 export function PopcornRating({
   value,
   onChange,
@@ -5,8 +7,8 @@ export function PopcornRating({
   readOnly = false,
   size = 'md',
 }) {
-  const sizes = { sm: '1.15rem', md: '1.5rem', lg: '2rem' };
-  const fontSize = sizes[size] || sizes.md;
+  const sizes = { sm: 18, md: 24, lg: 32 };
+  const iconSize = sizes[size] || sizes.md;
 
   return (
     <div
@@ -27,7 +29,7 @@ export function PopcornRating({
             aria-pressed={active}
             aria-label={`${n} popcorn`}
           >
-            🍿
+            <PopKernelIcon size={iconSize} />
           </button>
         );
       })}
@@ -44,19 +46,22 @@ export function PopcornRating({
           background: none;
           border: none;
           padding: 0.1rem;
-          font-size: ${fontSize};
           line-height: 1;
-          filter: grayscale(1) brightness(0.55);
+          color: #3a2f28;
           opacity: 0.45;
-          transition: transform 0.15s ease, filter 0.2s, opacity 0.2s;
+          transition: transform 0.15s ease, color 0.2s, opacity 0.2s;
         }
         .pop:not(:disabled):hover {
           transform: scale(1.12);
         }
         .pop.active {
-          filter: none;
+          color: var(--accent-2);
           opacity: 1;
           transform: scale(1.05);
+        }
+        .pop-kernel-icon {
+          display: block;
+          filter: drop-shadow(0 0 5px rgba(247, 201, 72, 0.18));
         }
       `}</style>
     </div>
