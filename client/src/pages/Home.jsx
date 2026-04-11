@@ -5,6 +5,7 @@ import { MovieCard } from '../components/MovieCard.jsx';
 import { SearchBar } from '../components/SearchBar.jsx';
 import { FilterBar } from '../components/FilterBar.jsx';
 import { Loader, MovieGridSkeleton } from '../components/Loader.jsx';
+import { realPostersFirst } from '../utils/poster.js';
 
 export function Home() {
   const { user } = useAuth();
@@ -27,7 +28,7 @@ export function Home() {
       if (genres.length) params.genre = genres.join(',');
       if (sort && sort !== 'newest') params.sort = sort;
       const { data } = await api.get('/movies', { params });
-      setMovies(data);
+      setMovies(realPostersFirst(data));
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not load movies');
     } finally {
@@ -43,7 +44,7 @@ export function Home() {
     (async () => {
       try {
         const { data } = await api.get('/movies/top');
-        setTrending(data);
+        setTrending(realPostersFirst(data));
       } catch {
         setTrending([]);
       }
@@ -59,7 +60,7 @@ export function Home() {
       setRecoLoading(true);
       try {
         const { data } = await api.get('/movies/recommendations');
-        setReco(data);
+        setReco(realPostersFirst(data));
       } catch {
         setReco([]);
       } finally {

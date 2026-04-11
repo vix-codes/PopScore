@@ -6,6 +6,15 @@ export function hasPoster(movie) {
   return Boolean(movie?.posterUrl);
 }
 
+export function hasRealPoster(movie) {
+  const url = String(movie?.posterUrl || '');
+  return Boolean(url) && !url.includes('placehold.co');
+}
+
+export function realPostersFirst(movies = []) {
+  return [...movies].sort((a, b) => Number(hasRealPoster(b)) - Number(hasRealPoster(a)));
+}
+
 export function posterFallbackClass(movie) {
   return hasPoster(movie) ? '' : 'poster-fallback-active';
 }
