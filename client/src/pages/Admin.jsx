@@ -18,6 +18,40 @@ const emptyForm = {
   posterUrl: '',
 };
 
+const POSTER_WIDTH = 500;
+const POSTER_HEIGHT = 750;
+
+function imageFileToPoster(file) {
+  return new Promise((resolve, reject) => {
+    if (!file?.type?.startsWith('image/')) {
+      reject(new Error('Choose an image file for the poster.'));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Could not read poster image.'));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Could not load poster image.'));
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = POSTER_WIDTH;
+        canvas.height = POSTER_HEIGHT;
+        const ctx = canvas.getContext('2d');
+        const scale = Math.max(POSTER_WIDTH / img.width, POSTER_HEIGHT / img.height);
+        const width = img.width * scale;
+        const height = img.height * scale;
+        const x = (POSTER_WIDTH - width) / 2;
+        const y = (POSTER_HEIGHT - height) / 2;
+        ctx.drawImage(img, x, y, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 export function Admin() {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,6 +81,17 @@ export function Admin() {
       .split(',')
       .map((g) => g.trim())
       .filter(Boolean);
+
+  const choosePoster = async (file) => {
+    setErr('');
+    if (!file) return;
+    try {
+      const posterUrl = await imageFileToPoster(file);
+      setForm((current) => ({ ...current, posterUrl }));
+    } catch (ex) {
+      setErr(ex.message || 'Poster image failed');
+    }
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -115,6 +160,20 @@ export function Admin() {
         <h2 className="form-title">{editingId ? 'Edit movie' : 'Add movie'}</h2>
         {err && <div className="error-banner">{err}</div>}
         <form onSubmit={submit} className="grid-form">
+          <div className="poster-picker">
+            <div className={`poster-preview ${form.posterUrl ? '' : 'empty'}`}>
+              {form.posterUrl ? <img src={form.posterUrl} alt="" /> : <span>Add poster image</span>}
+            </div>
+            <label className="btn btn-ghost poster-upload">
+              Choose image
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => choosePoster(e.target.files?.[0])}
+                required={!form.posterUrl}
+              />
+            </label>
+          </div>
           <div>
             <label className="label">Title</label>
             <input
@@ -140,15 +199,6 @@ export function Admin() {
               type="number"
               value={form.year}
               onChange={(e) => setForm({ ...form, year: e.target.value })}
-              required
-            />
-          </div>
-          <div className="full">
-            <label className="label">Poster URL</label>
-            <input
-              className="input"
-              value={form.posterUrl}
-              onChange={(e) => setForm({ ...form, posterUrl: e.target.value })}
               required
             />
           </div>
@@ -226,11 +276,60 @@ export function Admin() {
         }
         .grid-form {
           display: grid;
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: 180px 1fr 1fr;
           gap: 1rem;
+          align-items: start;
         }
         .grid-form .full {
-          grid-column: 1 / -1;
+          grid-column: 2 / -1;
+        }
+        .poster-picker {
+          grid-row: span 4;
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+        .poster-preview {
+          aspect-ratio: 2/3;
+          width: 100%;
+          overflow: hidden;
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          background: #101219;
+        }
+        .poster-preview img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .poster-preview.empty {
+          display: grid;
+          place-items: center;
+          padding: 1rem;
+          text-align: center;
+          color: var(--text-muted);
+          font-size: 0.85rem;
+          font-weight: 700;
+          background:
+            repeating-linear-gradient(
+              90deg,
+              rgba(255, 255, 255, 0.1) 0 12px,
+              transparent 12px 20px
+            ),
+            linear-gradient(160deg, rgba(255, 107, 53, 0.18), transparent 48%),
+            #101219;
+        }
+        .poster-upload {
+          width: 100%;
+          position: relative;
+          overflow: hidden;
+        }
+        .poster-upload input {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          cursor: pointer;
         }
         .actions {
           display: flex;
@@ -240,6 +339,10 @@ export function Admin() {
         @media (max-width: 640px) {
           .grid-form {
             grid-template-columns: 1fr;
+          }
+          .grid-form .full,
+          .poster-picker {
+            grid-column: 1;
           }
         }
         .section-title.sub {

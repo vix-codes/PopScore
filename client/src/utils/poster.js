@@ -8,7 +8,7 @@ export function hasPoster(movie) {
 
 export function hasRealPoster(movie) {
   const url = String(movie?.posterUrl || '');
-  return Boolean(url) && !url.includes('placehold.co');
+  return Boolean(url) && (url.startsWith('data:image/') || !url.includes('placehold.co'));
 }
 
 export function moviesWithRealPosters(movies = []) {

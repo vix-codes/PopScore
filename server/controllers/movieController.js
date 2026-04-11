@@ -8,6 +8,10 @@ const realPosterFilter = {
 
 async function posterUrlIsReachable(url) {
   try {
+    if (/^data:image\/(png|jpe?g|webp);base64,/i.test(url)) {
+      return url.length <= 2_000_000;
+    }
+
     const parsed = new URL(url);
     if (!['http:', 'https:'].includes(parsed.protocol)) return false;
 
