@@ -13,30 +13,33 @@ export function Navbar() {
   return (
     <header className="navbar">
       <div className="nav-inner">
-        <Link to="/" className="brand">
-          <span className="brand-pop">🍿</span>
-          <span className="brand-text">PopScore</span>
-        </Link>
-        <nav className="nav-links">
-          <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')} end>
-            Discover
-          </NavLink>
-          {user && (
-            <>
-              <NavLink to="/favorites" className={({ isActive }) => (isActive ? 'active' : '')}>
-                Favorites
-              </NavLink>
-              <NavLink to="/profile" className={({ isActive }) => (isActive ? 'active' : '')}>
-                Profile
-              </NavLink>
-              {isAdmin && (
-                <NavLink to="/admin" className={({ isActive }) => (isActive ? 'active' : '')}>
-                  Admin
+        <div className="nav-left" />
+        <div className="nav-center">
+          <Link to="/" className="brand">
+            <span className="brand-pop">🍿</span>
+            <span className="brand-text">PopScore</span>
+          </Link>
+          <nav className="nav-links">
+            <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')} end>
+              Discover
+            </NavLink>
+            {user && (
+              <>
+                <NavLink to="/favorites" className={({ isActive }) => (isActive ? 'active' : '')}>
+                  Favorites
                 </NavLink>
-              )}
-            </>
-          )}
-        </nav>
+                <NavLink to="/profile" className={({ isActive }) => (isActive ? 'active' : '')}>
+                  Profile
+                </NavLink>
+                {isAdmin && (
+                  <NavLink to="/admin" className={({ isActive }) => (isActive ? 'active' : '')}>
+                    Admin
+                  </NavLink>
+                )}
+              </>
+            )}
+          </nav>
+        </div>
         <div className="nav-auth">
           {user ? (
             <>
@@ -63,28 +66,36 @@ export function Navbar() {
           top: 0;
           z-index: 50;
           border-bottom: 1px solid var(--border);
-          background: rgba(10, 11, 15, 0.85);
+          background: rgba(10, 11, 15, 0.88);
           backdrop-filter: blur(12px);
         }
         .nav-inner {
-          max-width: 1280px;
+          max-width: 1380px;
           margin: 0 auto;
-          padding: 0.85rem 1.5rem;
-          display: flex;
+          padding: 1.05rem 1.5rem 1.15rem;
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
           align-items: center;
-          gap: 1.5rem;
+          gap: 1rem;
+        }
+        .nav-center {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.8rem;
         }
         .brand {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          justify-content: center;
+          gap: 0.65rem;
           font-family: var(--font-display);
           font-weight: 800;
-          font-size: 1.35rem;
+          font-size: 2.1rem;
           letter-spacing: -0.03em;
         }
         .brand-pop {
-          font-size: 1.5rem;
+          font-size: 2rem;
           filter: drop-shadow(0 0 8px var(--glow));
         }
         .brand-text {
@@ -95,14 +106,15 @@ export function Navbar() {
         }
         .nav-links {
           display: flex;
-          gap: 0.25rem;
-          flex: 1;
+          justify-content: center;
+          gap: 0.45rem;
+          flex-wrap: wrap;
         }
         .nav-links a {
-          padding: 0.5rem 0.85rem;
+          padding: 0.72rem 1.2rem;
           border-radius: 8px;
-          font-weight: 600;
-          font-size: 0.9rem;
+          font-weight: 700;
+          font-size: 1rem;
           color: var(--text-muted);
           transition: color 0.2s, background 0.2s;
         }
@@ -117,12 +129,13 @@ export function Navbar() {
         .nav-auth {
           display: flex;
           align-items: center;
+          justify-self: end;
           gap: 0.5rem;
         }
         .user-pill {
-          font-size: 0.85rem;
+          font-size: 0.95rem;
           color: var(--text-muted);
-          padding: 0.35rem 0.75rem;
+          padding: 0.45rem 0.9rem;
           border-radius: 999px;
           border: 1px solid var(--border);
           max-width: 140px;
@@ -130,14 +143,34 @@ export function Navbar() {
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
           .nav-inner {
-            flex-wrap: wrap;
+            grid-template-columns: 1fr;
+            justify-items: center;
           }
-          .nav-links {
-            order: 3;
-            width: 100%;
-            flex-wrap: wrap;
+          .nav-left {
+            display: none;
+          }
+          .nav-auth {
+            justify-self: center;
+          }
+          .brand {
+            font-size: 1.8rem;
+          }
+          .brand-pop {
+            font-size: 1.8rem;
+          }
+        }
+        @media (max-width: 640px) {
+          .nav-inner {
+            padding: 0.95rem 1rem 1rem;
+          }
+          .brand {
+            font-size: 1.55rem;
+          }
+          .nav-links a {
+            padding: 0.62rem 0.95rem;
+            font-size: 0.94rem;
           }
           .user-pill {
             display: none;

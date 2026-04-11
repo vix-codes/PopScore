@@ -77,20 +77,9 @@ export function Home() {
 
   return (
     <div className="page home-page">
-      <section className="hero animate-in">
-        <h1 className="hero-title">
-          Measure movies in <span className="pop-emoji">🍿</span> not stars
-        </h1>
-        <p className="hero-sub">
-          Crowd scores, personal picks, and a cinema-dark watchlist built around your taste.
-        </p>
-      </section>
-
       {trending.length > 0 && (
         <section className="trending-block">
-          <h2 className="section-title">
-            <span className="fire">🔥</span> Trending top 5
-          </h2>
+          <h2 className="section-title">Trending top 5</h2>
           <div className="trending-scroll">
             {trending.map((m) => (
               <div key={m._id} className="trend-card-wrap">
@@ -103,9 +92,9 @@ export function Home() {
 
       {user && (
         <section className="reco-block">
-          <h2 className="section-title">🎯 For you</h2>
+          <h2 className="section-title">For you</h2>
           {recoLoading ? (
-            <Loader label="Finding picks…" />
+            <Loader label="Finding picks..." />
           ) : reco.length ? (
             <div className="movie-grid small">
               {reco.map((m) => (
@@ -138,34 +127,9 @@ export function Home() {
       </section>
 
       <style>{`
-        .hero {
-          text-align: center;
-          padding: 2rem 0 2.5rem;
-          max-width: 720px;
-          margin: 0 auto;
-        }
-        .hero-title {
-          font-family: var(--font-display);
-          font-size: clamp(1.85rem, 4vw, 2.75rem);
-          font-weight: 800;
-          letter-spacing: -0.03em;
-          margin: 0 0 1rem;
-          line-height: 1.15;
-        }
-        .pop-emoji {
-          filter: drop-shadow(0 0 12px var(--glow));
-        }
-        .hero-sub {
-          margin: 0;
-          color: var(--text-muted);
-          font-size: 1.05rem;
-          line-height: 1.6;
-        }
         .trending-block {
-          margin-bottom: 2.5rem;
-        }
-        .fire {
-          margin-right: 0.25rem;
+          margin-bottom: 2.75rem;
+          padding-top: 1rem;
         }
         .trending-scroll {
           display: grid;
