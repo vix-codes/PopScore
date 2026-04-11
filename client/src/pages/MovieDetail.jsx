@@ -15,8 +15,8 @@ function MovieDetail() {
     async function loadData() {
       try {
         const [movieData, reviewData] = await Promise.all([getMovieById(id), getReviewsByMovieId(id)]);
-        setMovie(movieData);
-        setReviews(reviewData);
+        setMovie(movieData.movie || movieData);
+        setReviews(reviewData.reviews || reviewData.data || movieData.reviews || []);
       } catch (err) {
         setError("Failed to load movie details.");
       } finally {
@@ -32,9 +32,9 @@ function MovieDetail() {
   if (!movie) return <p>Movie not found.</p>;
 
   return (
-    <div>
+    <div className="container">
       <h2>{movie.title}</h2>
-      <StarRating rating={movie.rating} />
+      <StarRating rating={movie.averageRating || movie.avgRating || movie.rating || 0} />
       <p>{movie.description}</p>
       <h3>Reviews</h3>
       <ReviewList reviews={reviews} />

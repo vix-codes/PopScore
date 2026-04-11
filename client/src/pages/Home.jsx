@@ -11,7 +11,7 @@ function Home() {
     async function loadMovies() {
       try {
         const data = await getMovies();
-        setMovies(data);
+        setMovies(Array.isArray(data) ? data : data.movies || []);
       } catch (err) {
         setError("Failed to load movies.");
       } finally {
@@ -26,7 +26,7 @@ function Home() {
   if (error) return <p>{error}</p>;
 
   return (
-    <div>
+    <div className="container">
       <h2>Movies</h2>
       <div className="grid">
         {movies.map((movie) => (

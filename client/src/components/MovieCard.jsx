@@ -5,7 +5,7 @@ function MovieCard({ movie }) {
   return (
     <div className="card">
       <h3>{movie.title}</h3>
-      <StarRating rating={movie.rating} />
+      <StarRating rating={movie.averageRating || movie.avgRating || movie.rating || 0} />
       <p>
         <Link to={`/movies/${movie.id}`}>View details</Link>
       </p>
