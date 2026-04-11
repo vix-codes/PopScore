@@ -73,10 +73,10 @@ export function Home() {
     <div className="page home-page">
       <section className="hero animate-in">
         <h1 className="hero-title">
-          Rate films with <span className="pop-emoji">🍿</span> not stars
+          Measure movies in <span className="pop-emoji">🍿</span> not stars
         </h1>
         <p className="hero-sub">
-          Community reviews, smart picks from your taste, and a cinema-dark experience built for movie lovers.
+          Crowd scores, personal picks, and a cinema-dark watchlist built around your taste.
         </p>
       </section>
 
