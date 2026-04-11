@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../api/client.js';
 import { MovieCard } from '../components/MovieCard.jsx';
 import { MovieGridSkeleton } from '../components/Loader.jsx';
+import { realPostersFirst } from '../utils/poster.js';
 
 export function Favorites() {
   const [movies, setMovies] = useState([]);
@@ -12,7 +13,7 @@ export function Favorites() {
       setLoading(true);
       try {
         const { data } = await api.get('/users/favorites');
-        setMovies(data);
+        setMovies(realPostersFirst(data));
       } catch {
         setMovies([]);
       } finally {

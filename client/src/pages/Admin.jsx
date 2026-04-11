@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import api from '../api/client.js';
 import { MovieGridSkeleton } from '../components/Loader.jsx';
 import { PopMeter } from '../components/PopMeter.jsx';
-import { hasPoster, posterFallbackClass, posterSrc, usePosterFallback } from '../utils/poster.js';
+import {
+  hasPoster,
+  posterFallbackClass,
+  posterSrc,
+  realPostersFirst,
+  usePosterFallback,
+} from '../utils/poster.js';
 
 const emptyForm = {
   title: '',
@@ -24,7 +30,7 @@ export function Admin() {
     setLoading(true);
     try {
       const { data } = await api.get('/movies');
-      setMovies(data);
+      setMovies(realPostersFirst(data));
     } catch {
       setMovies([]);
     } finally {
