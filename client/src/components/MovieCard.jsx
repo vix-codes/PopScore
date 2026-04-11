@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { PopcornRating } from './PopcornRating.jsx';
 import { PopMeter } from './PopMeter.jsx';
+import { posterSrc, usePosterFallback } from '../utils/poster.js';
 
 export function MovieCard({ movie }) {
   const id = movie._id;
@@ -10,7 +11,13 @@ export function MovieCard({ movie }) {
     <Link to={`/movie/${id}`} className="movie-card-link animate-in">
       <article className="card movie-card">
         <div className="poster-wrap">
-          <img src={movie.posterUrl} alt="" className="poster" loading="lazy" />
+          <img
+            src={posterSrc(movie)}
+            alt=""
+            className="poster"
+            loading="lazy"
+            onError={(event) => usePosterFallback(event, movie.title)}
+          />
           <div className="poster-shine" />
         </div>
         <div className="movie-card-body">

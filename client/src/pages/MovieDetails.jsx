@@ -7,6 +7,7 @@ import { PopMeter } from '../components/PopMeter.jsx';
 import { ReviewList } from '../components/ReviewList.jsx';
 import { ReviewForm } from '../components/ReviewForm.jsx';
 import { DetailSkeleton } from '../components/Loader.jsx';
+import { posterSrc, usePosterFallback } from '../utils/poster.js';
 
 function RatingBreakdown({ breakdown, total }) {
   if (!breakdown || !total) return null;
@@ -170,7 +171,12 @@ export function MovieDetails() {
       <div className="detail-grid">
         <div className="poster-col">
           <div className="poster-frame">
-            <img src={movie.posterUrl} alt="" className="hero-poster" />
+            <img
+              src={posterSrc(movie)}
+              alt=""
+              className="hero-poster"
+              onError={(event) => usePosterFallback(event, movie.title)}
+            />
           </div>
           {user && (
             <button type="button" className="btn fav-btn" onClick={toggleFav} disabled={favBusy}>

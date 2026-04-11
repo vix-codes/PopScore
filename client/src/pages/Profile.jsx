@@ -4,6 +4,7 @@ import api from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { PopcornRating } from '../components/PopcornRating.jsx';
 import { Loader } from '../components/Loader.jsx';
+import { posterSrc, usePosterFallback } from '../utils/poster.js';
 
 function SentimentBadge({ sentiment }) {
   const map = {
@@ -59,7 +60,12 @@ export function Profile() {
             <li key={r._id} className="card pr-card">
               <Link to={`/movie/${r.movieId?._id || r.movieId}`} className="pr-movie">
                 {r.movieId?.posterUrl && (
-                  <img src={r.movieId.posterUrl} alt="" className="pr-poster" />
+                  <img
+                    src={posterSrc(r.movieId)}
+                    alt=""
+                    className="pr-poster"
+                    onError={(event) => usePosterFallback(event, r.movieId?.title)}
+                  />
                 )}
                 <div>
                   <strong>{r.movieId?.title || 'Movie'}</strong>

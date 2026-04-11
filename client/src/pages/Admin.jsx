@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../api/client.js';
 import { MovieGridSkeleton } from '../components/Loader.jsx';
 import { PopMeter } from '../components/PopMeter.jsx';
+import { posterSrc, usePosterFallback } from '../utils/poster.js';
 
 const emptyForm = {
   title: '',
@@ -175,7 +176,12 @@ export function Admin() {
         <div className="admin-list">
           {movies.map((m) => (
             <div key={m._id} className="card admin-row">
-              <img src={m.posterUrl} alt="" className="thumb" />
+              <img
+                src={posterSrc(m)}
+                alt=""
+                className="thumb"
+                onError={(event) => usePosterFallback(event, m.title)}
+              />
               <div className="info">
                 <strong>{m.title}</strong>
                 <span className="meta">

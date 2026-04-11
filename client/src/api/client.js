@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const envBase = (import.meta.env.VITE_API_URL || '').trim().replace(/\/$/, '');
+const productionApiFallback = 'https://popscore-production-7293.up.railway.app';
+const envBase = (
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? productionApiFallback : '')
+)
+  .trim()
+  .replace(/\/$/, '');
 const baseURL = envBase ? `${envBase}/api` : '/api';
 
 const api = axios.create({
