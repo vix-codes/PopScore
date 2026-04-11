@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export function SearchBar({ value, onChange, placeholder = 'Search movies...' }) {
+export function SearchBar({ value, onChange, placeholder = 'Search movies…' }) {
   const [local, setLocal] = useState(value || '');
 
   useEffect(() => {
@@ -17,6 +17,7 @@ export function SearchBar({ value, onChange, placeholder = 'Search movies...' })
   return (
     <div className="search-bar">
       <span className="search-icon" aria-hidden>
+        🔍
       </span>
       <input
         className="input search-input"
@@ -39,22 +40,8 @@ export function SearchBar({ value, onChange, placeholder = 'Search movies...' })
           top: 50%;
           transform: translateY(-50%);
           opacity: 0.5;
+          font-size: 0.9rem;
           pointer-events: none;
-          width: 0.85rem;
-          height: 0.85rem;
-          border: 2px solid currentColor;
-          border-radius: 999px;
-        }
-        .search-icon::after {
-          content: '';
-          position: absolute;
-          width: 0.45rem;
-          height: 2px;
-          right: -0.35rem;
-          bottom: -0.15rem;
-          border-radius: 999px;
-          background: currentColor;
-          transform: rotate(45deg);
         }
         .search-input {
           padding-left: 2.75rem;

@@ -5,7 +5,6 @@ import { MovieCard } from '../components/MovieCard.jsx';
 import { SearchBar } from '../components/SearchBar.jsx';
 import { FilterBar } from '../components/FilterBar.jsx';
 import { Loader, MovieGridSkeleton } from '../components/Loader.jsx';
-import { PopKernelCluster } from '../components/PopKernelIcon.jsx';
 import { moviesWithRealPosters } from '../utils/poster.js';
 
 export function Home() {
@@ -80,7 +79,7 @@ export function Home() {
     <div className="page home-page">
       <section className="hero animate-in">
         <h1 className="hero-title">
-          Measure movies in <span className="pop-emoji"><PopKernelCluster count={3} size={32} /></span> not stars
+          Measure movies in <span className="pop-emoji">🍿</span> not stars
         </h1>
         <p className="hero-sub">
           Crowd scores, personal picks, and a cinema-dark watchlist built around your taste.
@@ -90,7 +89,7 @@ export function Home() {
       {trending.length > 0 && (
         <section className="trending-block">
           <h2 className="section-title">
-            Trending top 5
+            <span className="fire">🔥</span> Trending top 5
           </h2>
           <div className="trending-scroll">
             {trending.map((m) => (
@@ -104,9 +103,9 @@ export function Home() {
 
       {user && (
         <section className="reco-block">
-          <h2 className="section-title">For you</h2>
+          <h2 className="section-title">🎯 For you</h2>
           {recoLoading ? (
-            <Loader label="Finding picks..." />
+            <Loader label="Finding picks…" />
           ) : reco.length ? (
             <div className="movie-grid small">
               {reco.map((m) => (
@@ -154,9 +153,6 @@ export function Home() {
           line-height: 1.15;
         }
         .pop-emoji {
-          color: var(--accent-2);
-          display: inline-flex;
-          vertical-align: -0.12em;
           filter: drop-shadow(0 0 12px var(--glow));
         }
         .hero-sub {
@@ -167,6 +163,9 @@ export function Home() {
         }
         .trending-block {
           margin-bottom: 2.5rem;
+        }
+        .fire {
+          margin-right: 0.25rem;
         }
         .trending-scroll {
           display: grid;

@@ -35,7 +35,7 @@ export function MovieCard({ movie, onPosterUnavailable }) {
           <h3 className="movie-title">{movie.title}</h3>
           <p className="movie-meta">
             {movie.year}
-            {movie.genre?.length ? ` - ${movie.genre.slice(0, 2).join(', ')}` : ''}
+            {movie.genre?.length ? ` · ${movie.genre.slice(0, 2).join(', ')}` : ''}
           </p>
           <div className="movie-rating-row">
             <PopcornRating value={rounded} readOnly size="sm" />

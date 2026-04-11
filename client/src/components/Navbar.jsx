@@ -1,6 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { PopKernelCluster } from './PopKernelIcon.jsx';
 
 export function Navbar() {
   const { user, logout, isAdmin } = useAuth();
@@ -15,7 +14,7 @@ export function Navbar() {
     <header className="navbar">
       <div className="nav-inner">
         <Link to="/" className="brand">
-          <span className="brand-pop"><PopKernelCluster count={3} size={19} /></span>
+          <span className="brand-pop">🍿</span>
           <span className="brand-text">PopScore</span>
         </Link>
         <nav className="nav-links">
@@ -85,7 +84,7 @@ export function Navbar() {
           letter-spacing: -0.03em;
         }
         .brand-pop {
-          color: var(--accent-2);
+          font-size: 1.5rem;
           filter: drop-shadow(0 0 8px var(--glow));
         }
         .brand-text {

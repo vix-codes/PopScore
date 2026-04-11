@@ -37,7 +37,7 @@ export function Login() {
     <div className="page auth-page animate-in">
       <div className="auth-card card">
         <h1 className="auth-title">Welcome back</h1>
-        <p className="auth-sub">Log in to drop popcorn ratings and save favorites.</p>
+        <p className="auth-sub">Log in to drop 🍿 ratings and save favorites.</p>
         {err && <div className="error-banner">{err}</div>}
         <form onSubmit={submit} className="auth-form">
           <div>
@@ -69,7 +69,7 @@ export function Login() {
             />
           </div>
           <button type="submit" className="btn btn-primary full" disabled={busy}>
-            {busy ? 'Signing in...' : 'Log in'}
+            {busy ? 'Signing in…' : 'Log in'}
           </button>
         </form>
         <p className="auth-footer">

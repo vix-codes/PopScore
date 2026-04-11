@@ -85,7 +85,7 @@ export function Signup() {
             />
           </div>
           <button type="submit" className="btn btn-primary full" disabled={busy}>
-            {busy ? 'Creating...' : 'Sign up'}
+            {busy ? 'Creating…' : 'Sign up'}
           </button>
         </form>
         <p className="auth-footer">
