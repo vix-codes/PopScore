@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../api/client.js';
 import { MovieGridSkeleton } from '../components/Loader.jsx';
 import { PopMeter } from '../components/PopMeter.jsx';
-import { posterSrc, usePosterFallback } from '../utils/poster.js';
+import { hasPoster, posterFallbackClass, posterSrc, usePosterFallback } from '../utils/poster.js';
 
 const emptyForm = {
   title: '',
@@ -176,12 +176,12 @@ export function Admin() {
         <div className="admin-list">
           {movies.map((m) => (
             <div key={m._id} className="card admin-row">
-              <img
-                src={posterSrc(m)}
-                alt=""
-                className="thumb"
-                onError={(event) => usePosterFallback(event, m.title)}
-              />
+              <div className={`thumb-frame ${posterFallbackClass(m)}`} data-poster-frame>
+                {hasPoster(m) && (
+                  <img src={posterSrc(m)} alt="" className="thumb" onError={usePosterFallback} />
+                )}
+                <span className="thumb-fallback" aria-hidden="true">{m.title}</span>
+              </div>
               <div className="info">
                 <strong>{m.title}</strong>
                 <span className="meta">
@@ -258,7 +258,30 @@ export function Admin() {
           width: 56px;
           height: 84px;
           object-fit: cover;
+          display: block;
+        }
+        .thumb-frame {
+          position: relative;
+          width: 56px;
+          height: 84px;
           border-radius: 8px;
+          overflow: hidden;
+          background: #101219;
+        }
+        .thumb-fallback {
+          position: absolute;
+          inset: 0;
+          display: none;
+          place-items: center;
+          padding: 0.35rem;
+          text-align: center;
+          color: var(--accent-2);
+          font-size: 0.58rem;
+          font-weight: 800;
+          line-height: 1.1;
+        }
+        .poster-fallback-active .thumb-fallback {
+          display: grid;
         }
         .info {
           display: flex;

@@ -7,7 +7,7 @@ import { PopMeter } from '../components/PopMeter.jsx';
 import { ReviewList } from '../components/ReviewList.jsx';
 import { ReviewForm } from '../components/ReviewForm.jsx';
 import { DetailSkeleton } from '../components/Loader.jsx';
-import { posterSrc, usePosterFallback } from '../utils/poster.js';
+import { hasPoster, posterFallbackClass, posterSrc, usePosterFallback } from '../utils/poster.js';
 
 function RatingBreakdown({ breakdown, total }) {
   if (!breakdown || !total) return null;
@@ -170,13 +170,19 @@ export function MovieDetails() {
     <div className="page movie-detail animate-in">
       <div className="detail-grid">
         <div className="poster-col">
-          <div className="poster-frame">
-            <img
-              src={posterSrc(movie)}
-              alt=""
-              className="hero-poster"
-              onError={(event) => usePosterFallback(event, movie.title)}
-            />
+          <div className={`poster-frame ${posterFallbackClass(movie)}`} data-poster-frame>
+            {hasPoster(movie) && (
+              <img
+                src={posterSrc(movie)}
+                alt=""
+                className="hero-poster"
+                onError={usePosterFallback}
+              />
+            )}
+            <div className="detail-poster-fallback" aria-hidden="true">
+              <span>{movie.title}</span>
+              <small>Poster unavailable</small>
+            </div>
           </div>
           {user && (
             <button type="button" className="btn fav-btn" onClick={toggleFav} disabled={favBusy}>
@@ -242,16 +248,48 @@ export function MovieDetails() {
           gap: 1rem;
         }
         .poster-frame {
+          position: relative;
+          aspect-ratio: 2/3;
           border-radius: var(--radius);
           overflow: hidden;
           border: 1px solid var(--border);
           box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+          background: #101219;
         }
         .hero-poster {
           width: 100%;
+          height: 100%;
           display: block;
-          aspect-ratio: 2/3;
           object-fit: cover;
+        }
+        .detail-poster-fallback {
+          position: absolute;
+          inset: 0;
+          display: none;
+          place-items: center;
+          align-content: center;
+          gap: 0.8rem;
+          padding: 1.5rem;
+          text-align: center;
+          background:
+            linear-gradient(160deg, rgba(255, 107, 53, 0.16), transparent 48%),
+            #101219;
+        }
+        .detail-poster-fallback span {
+          font-family: var(--font-display);
+          font-size: clamp(1.4rem, 4vw, 2.3rem);
+          font-weight: 800;
+          line-height: 1.12;
+        }
+        .detail-poster-fallback small {
+          color: var(--accent-2);
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+        }
+        .poster-fallback-active .detail-poster-fallback {
+          display: grid;
         }
         .fav-btn {
           width: 100%;

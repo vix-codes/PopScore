@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { PopcornRating } from './PopcornRating.jsx';
 import { PopMeter } from './PopMeter.jsx';
-import { posterSrc, usePosterFallback } from '../utils/poster.js';
+import { hasPoster, posterFallbackClass, posterSrc, usePosterFallback } from '../utils/poster.js';
 
 export function MovieCard({ movie }) {
   const id = movie._id;
@@ -10,14 +10,20 @@ export function MovieCard({ movie }) {
   return (
     <Link to={`/movie/${id}`} className="movie-card-link animate-in">
       <article className="card movie-card">
-        <div className="poster-wrap">
-          <img
-            src={posterSrc(movie)}
-            alt=""
-            className="poster"
-            loading="lazy"
-            onError={(event) => usePosterFallback(event, movie.title)}
-          />
+        <div className={`poster-wrap ${posterFallbackClass(movie)}`} data-poster-frame>
+          {hasPoster(movie) && (
+            <img
+              src={posterSrc(movie)}
+              alt=""
+              className="poster"
+              loading="lazy"
+              onError={usePosterFallback}
+            />
+          )}
+          <div className="poster-fallback" aria-hidden="true">
+            <span>{movie.title}</span>
+            <small>Poster unavailable</small>
+          </div>
           <div className="poster-shine" />
         </div>
         <div className="movie-card-body">
@@ -51,13 +57,45 @@ export function MovieCard({ movie }) {
         .poster-wrap {
           position: relative;
           overflow: hidden;
+          aspect-ratio: 2/3;
+          background: #101219;
         }
         .poster {
           width: 100%;
-          aspect-ratio: 2/3;
+          height: 100%;
           object-fit: cover;
           display: block;
           transition: transform 0.4s ease;
+        }
+        .poster-fallback {
+          position: absolute;
+          inset: 0;
+          display: none;
+          place-items: center;
+          align-content: center;
+          gap: 0.7rem;
+          padding: 1.25rem;
+          text-align: center;
+          background:
+            linear-gradient(160deg, rgba(255, 107, 53, 0.16), transparent 48%),
+            #101219;
+          color: var(--text);
+        }
+        .poster-fallback span {
+          font-family: var(--font-display);
+          font-size: clamp(1rem, 1.8vw, 1.45rem);
+          font-weight: 800;
+          line-height: 1.15;
+        }
+        .poster-fallback small {
+          color: var(--accent-2);
+          font-size: 0.7rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+        }
+        .poster-fallback-active .poster-fallback {
+          display: grid;
         }
         .movie-card:hover .poster {
           transform: scale(1.06);

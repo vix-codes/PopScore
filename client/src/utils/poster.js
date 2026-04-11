@@ -1,15 +1,19 @@
-export function fallbackPosterUrl(title = 'PopScore') {
-  const label = encodeURIComponent(String(title || 'PopScore').trim() || 'PopScore');
-  return `https://placehold.co/500x750/141414/f5b942/png?text=${label}`;
-}
-
 export function posterSrc(movie) {
-  return movie?.posterUrl || fallbackPosterUrl(movie?.title);
+  return movie?.posterUrl || '';
 }
 
-export function usePosterFallback(event, title) {
-  const fallback = fallbackPosterUrl(title);
-  if (event.currentTarget.src !== fallback) {
-    event.currentTarget.src = fallback;
+export function hasPoster(movie) {
+  return Boolean(movie?.posterUrl);
+}
+
+export function posterFallbackClass(movie) {
+  return hasPoster(movie) ? '' : 'poster-fallback-active';
+}
+
+export function usePosterFallback(event) {
+  event.currentTarget.hidden = true;
+  const frame = event.currentTarget.closest('[data-poster-frame]');
+  if (frame) {
+    frame.classList.add('poster-fallback-active');
   }
 }

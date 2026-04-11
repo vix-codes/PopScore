@@ -4,7 +4,7 @@ import api from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { PopcornRating } from '../components/PopcornRating.jsx';
 import { Loader } from '../components/Loader.jsx';
-import { posterSrc, usePosterFallback } from '../utils/poster.js';
+import { hasPoster, posterFallbackClass, posterSrc, usePosterFallback } from '../utils/poster.js';
 
 function SentimentBadge({ sentiment }) {
   const map = {
@@ -59,14 +59,19 @@ export function Profile() {
           {reviews.map((r) => (
             <li key={r._id} className="card pr-card">
               <Link to={`/movie/${r.movieId?._id || r.movieId}`} className="pr-movie">
-                {r.movieId?.posterUrl && (
-                  <img
-                    src={posterSrc(r.movieId)}
-                    alt=""
-                    className="pr-poster"
-                    onError={(event) => usePosterFallback(event, r.movieId?.title)}
-                  />
-                )}
+                <span className={`pr-poster-frame ${posterFallbackClass(r.movieId)}`} data-poster-frame>
+                  {hasPoster(r.movieId) && (
+                    <img
+                      src={posterSrc(r.movieId)}
+                      alt=""
+                      className="pr-poster"
+                      onError={usePosterFallback}
+                    />
+                  )}
+                  <span className="pr-poster-fallback" aria-hidden="true">
+                    {r.movieId?.title || 'Movie'}
+                  </span>
+                </span>
                 <div>
                   <strong>{r.movieId?.title || 'Movie'}</strong>
                   <span className="pr-year">{r.movieId?.year}</span>
@@ -152,7 +157,31 @@ export function Profile() {
           width: 48px;
           height: 72px;
           object-fit: cover;
+          display: block;
+        }
+        .pr-poster-frame {
+          position: relative;
+          width: 48px;
+          height: 72px;
           border-radius: 6px;
+          overflow: hidden;
+          flex: 0 0 auto;
+          background: #101219;
+        }
+        .pr-poster-fallback {
+          position: absolute;
+          inset: 0;
+          display: none;
+          place-items: center;
+          padding: 0.3rem;
+          text-align: center;
+          color: var(--accent-2);
+          font-size: 0.52rem;
+          font-weight: 800;
+          line-height: 1.1;
+        }
+        .poster-fallback-active .pr-poster-fallback {
+          display: grid;
         }
         .pr-year {
           display: block;
