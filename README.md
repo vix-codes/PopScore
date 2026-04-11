@@ -306,7 +306,7 @@ Axios uses **`/api`** in development (Vite proxy). With **`VITE_API_URL`** set a
 2. **Run the server:** `cd server && npm start` (`PORT`, `MONGODB_URI`, `JWT_SECRET`, optional `CLIENT_ORIGIN`).
 3. **CORS:** set **`CLIENT_ORIGIN`** (comma-separated) to your production site(s); localhost dev origins stay allowed in code.
 4. **Same-origin option:** serve `client/dist` from Express or one reverse proxy so relative `/api` still works without `VITE_API_URL`.
-5. **Seed:** `npm run seed` once for demo data (destructive reset).
+5. **Seed:** On first deploy, if the database has **no movies and no users**, the server **auto-seeds** demo data. To **reset** everything, run `npm run seed` locally (destructive).
 
 ### Railway (API service)
 

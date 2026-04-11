@@ -12,11 +12,28 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const distPath = path.join(__dirname, '../client/dist');
-const serveClient = process.env.NODE_ENV === 'production' && fs.existsSync(distPath);
+
+function resolveClientDist() {
+  const candidates = [
+    path.join(__dirname, '../client/dist'),
+    path.join(process.cwd(), 'client/dist'),
+    path.join(process.cwd(), 'dist'),
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(path.join(p, 'index.html'))) return p;
+  }
+  return null;
+}
+
+const distPath = resolveClientDist();
+const isProdLike =
+  process.env.NODE_ENV === 'production' || Boolean(process.env.RAILWAY_ENVIRONMENT);
+const serveClient = Boolean(distPath && isProdLike);
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
+
+app.set('trust proxy', 1);
 
 const defaultOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
 const fromEnv = (process.env.CLIENT_ORIGIN || '')
@@ -28,7 +45,7 @@ const allowedOrigins = [...new Set([...defaultOrigins, ...fromEnv])];
 function corsOrigin(origin, cb) {
   if (!origin) return cb(null, true);
   if (allowedOrigins.includes(origin)) return cb(null, true);
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
     try {
       const host = new URL(origin).hostname;
       if (
@@ -59,7 +76,7 @@ app.use('/api/movies', movieRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/users', userRoutes);
 
-app.get('/api/health', (_, res) => res.json({ ok: true }));
+app.get('/api/health', (_, res) => res.json({ ok: true, client: serveClient }));
 
 if (serveClient) {
   app.use(express.static(distPath));
@@ -75,6 +92,20 @@ app.use((err, _req, res, _next) => {
 });
 
 await connectDB();
+
+try {
+  const { seedDatabase } = await import('./seed/seedDatabase.js');
+  const result = await seedDatabase({ forceWipe: false });
+  if (!result.skipped) {
+    console.log('PopScore: empty database — demo catalog and users were created automatically.');
+  }
+} catch (e) {
+  console.error('PopScore auto-seed failed:', e.message);
+}
+
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`PopScore listening on port ${PORT}${serveClient ? ' (API + client)' : ' (API only)'}`);
+  console.log(`PopScore listening on port ${PORT}${serveClient ? ' (API + client)' : ' (API only — no client/dist found)'}`);
+  if (!serveClient && isProdLike) {
+    console.warn('Warning: client/dist missing — check Railway build (client must be built to client/dist).');
+  }
 });
