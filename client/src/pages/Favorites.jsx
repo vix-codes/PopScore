@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../api/client.js';
 import { MovieCard } from '../components/MovieCard.jsx';
 import { MovieGridSkeleton } from '../components/Loader.jsx';
-import { realPostersFirst } from '../utils/poster.js';
+import { moviesWithRealPosters } from '../utils/poster.js';
 
 export function Favorites() {
   const [movies, setMovies] = useState([]);
@@ -13,7 +13,7 @@ export function Favorites() {
       setLoading(true);
       try {
         const { data } = await api.get('/users/favorites');
-        setMovies(realPostersFirst(data));
+        setMovies(moviesWithRealPosters(data));
       } catch {
         setMovies([]);
       } finally {
@@ -21,6 +21,10 @@ export function Favorites() {
       }
     })();
   }, []);
+
+  const removeUnavailablePoster = (id) => {
+    setMovies((items) => items.filter((m) => m._id !== id));
+  };
 
   return (
     <div className="page fav-page animate-in">
@@ -31,7 +35,7 @@ export function Favorites() {
       ) : movies.length ? (
         <div className="movie-grid">
           {movies.map((m) => (
-            <MovieCard key={m._id} movie={m} />
+            <MovieCard key={m._id} movie={m} onPosterUnavailable={removeUnavailablePoster} />
           ))}
         </div>
       ) : (

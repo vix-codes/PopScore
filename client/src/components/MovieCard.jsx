@@ -3,7 +3,7 @@ import { PopcornRating } from './PopcornRating.jsx';
 import { PopMeter } from './PopMeter.jsx';
 import { hasPoster, posterFallbackClass, posterSrc, usePosterFallback } from '../utils/poster.js';
 
-export function MovieCard({ movie }) {
+export function MovieCard({ movie, onPosterUnavailable }) {
   const id = movie._id;
   const rounded = Math.round(Number(movie.avgRating) || 0);
 
@@ -17,7 +17,10 @@ export function MovieCard({ movie }) {
               alt=""
               className="poster"
               loading="lazy"
-              onError={usePosterFallback}
+              onError={(event) => {
+                usePosterFallback(event);
+                onPosterUnavailable?.(movie._id);
+              }}
             />
           )}
           <div className="poster-fallback" aria-hidden="true">

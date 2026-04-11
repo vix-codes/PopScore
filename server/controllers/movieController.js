@@ -2,10 +2,29 @@ import Movie from '../models/Movie.js';
 import Review from '../models/Review.js';
 import { getRatingBreakdown } from '../utils/movieStats.js';
 
+const realPosterFilter = {
+  posterUrl: { $exists: true, $ne: '', $not: /placehold\.co/i },
+};
+
+async function posterUrlIsReachable(url) {
+  try {
+    const parsed = new URL(url);
+    if (!['http:', 'https:'].includes(parsed.protocol)) return false;
+
+    const res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return false;
+
+    const type = res.headers.get('content-type') || '';
+    return type.startsWith('image/');
+  } catch {
+    return false;
+  }
+}
+
 export async function listMovies(req, res) {
   try {
     const { search, genre, sort } = req.query;
-    const filter = {};
+    const filter = { ...realPosterFilter };
 
     if (search && String(search).trim()) {
       filter.title = { $regex: String(search).trim(), $options: 'i' };
@@ -33,7 +52,7 @@ export async function listMovies(req, res) {
 
 export async function topMovies(req, res) {
   try {
-    const movies = await Movie.find()
+    const movies = await Movie.find(realPosterFilter)
       .sort({ avgRating: -1, reviewCount: -1 })
       .limit(5)
       .lean();
@@ -60,6 +79,9 @@ export async function createMovie(req, res) {
     if (!title || !year || !description || !posterUrl) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
+    if (!(await posterUrlIsReachable(posterUrl))) {
+      return res.status(400).json({ message: 'Poster image URL is not reachable' });
+    }
     const movie = await Movie.create({
       title,
       genre: Array.isArray(genre) ? genre : genre ? [genre] : [],
@@ -83,7 +105,12 @@ export async function updateMovie(req, res) {
     if (genre != null) update.genre = Array.isArray(genre) ? genre : [genre];
     if (year != null) update.year = Number(year);
     if (description != null) update.description = description;
-    if (posterUrl != null) update.posterUrl = posterUrl;
+    if (posterUrl != null) {
+      if (!(await posterUrlIsReachable(posterUrl))) {
+        return res.status(400).json({ message: 'Poster image URL is not reachable' });
+      }
+      update.posterUrl = posterUrl;
+    }
 
     const movie = await Movie.findByIdAndUpdate(req.params.id, update, { new: true });
     if (!movie) return res.status(404).json({ message: 'Movie not found' });
@@ -121,7 +148,7 @@ export async function recommendations(req, res) {
       .map(([g]) => g);
 
     if (!topGenres.length) {
-      const fallback = await Movie.find().sort({ avgRating: -1 }).limit(6).lean();
+      const fallback = await Movie.find(realPosterFilter).sort({ avgRating: -1 }).limit(6).lean();
       return res.json(fallback);
     }
 
@@ -133,6 +160,7 @@ export async function recommendations(req, res) {
       })
       .filter(Boolean);
     const candidates = await Movie.find({
+      ...realPosterFilter,
       genre: { $in: topGenres },
       _id: { $nin: reviewedMovieIds },
     })

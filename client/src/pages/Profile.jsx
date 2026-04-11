@@ -4,7 +4,7 @@ import api from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { PopcornRating } from '../components/PopcornRating.jsx';
 import { Loader } from '../components/Loader.jsx';
-import { hasPoster, posterFallbackClass, posterSrc, usePosterFallback } from '../utils/poster.js';
+import { hasPoster, hasRealPoster, posterFallbackClass, posterSrc, usePosterFallback } from '../utils/poster.js';
 
 function SentimentBadge({ sentiment }) {
   const map = {
@@ -30,7 +30,7 @@ export function Profile() {
       setLoading(true);
       try {
         const { data } = await api.get('/users/reviews');
-        setReviews(data);
+        setReviews(data.filter((review) => hasRealPoster(review.movieId)));
       } catch {
         setReviews([]);
       } finally {

@@ -6,8 +6,6 @@ import { recalculateMovieStats, sentimentFromRating } from '../utils/movieStats.
 import { MOVIES_RAW } from './moviesData.js';
 
 const tmdb = (path) => `https://image.tmdb.org/t/p/w500${path}`;
-const generatedPoster = (title) =>
-  `https://placehold.co/500x750/141414/f5b942/png?text=${encodeURIComponent(title)}`;
 
 const BROKEN_TMDB_POSTERS = new Set([
   'Aliens',
@@ -73,9 +71,6 @@ const BROKEN_TMDB_POSTERS = new Set([
   'Whiplash',
   'Zootopia',
 ]);
-
-const posterUrlFor = (title, posterPath) =>
-  BROKEN_TMDB_POSTERS.has(title) ? generatedPoster(title) : tmdb(posterPath);
 
 const REVIEW_LINES = [
   'Absolutely loved it—would watch again opening night.',
@@ -216,12 +211,13 @@ export async function seedDatabase(opts = {}) {
   const inserted = [];
   for (const row of MOVIES_RAW) {
     const [title, genre, year, description, posterPath] = row;
+    if (BROKEN_TMDB_POSTERS.has(title)) continue;
     const doc = await Movie.create({
       title,
       genre,
       year,
       description,
-      posterUrl: posterUrlFor(title, posterPath),
+      posterUrl: tmdb(posterPath),
       avgRating: 0,
       reviewCount: 0,
     });

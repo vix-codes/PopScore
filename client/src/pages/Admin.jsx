@@ -4,9 +4,9 @@ import { MovieGridSkeleton } from '../components/Loader.jsx';
 import { PopMeter } from '../components/PopMeter.jsx';
 import {
   hasPoster,
+  moviesWithRealPosters,
   posterFallbackClass,
   posterSrc,
-  realPostersFirst,
   usePosterFallback,
 } from '../utils/poster.js';
 
@@ -30,7 +30,7 @@ export function Admin() {
     setLoading(true);
     try {
       const { data } = await api.get('/movies');
-      setMovies(realPostersFirst(data));
+      setMovies(moviesWithRealPosters(data));
     } catch {
       setMovies([]);
     } finally {

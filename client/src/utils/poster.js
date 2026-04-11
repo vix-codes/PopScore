@@ -11,8 +11,8 @@ export function hasRealPoster(movie) {
   return Boolean(url) && !url.includes('placehold.co');
 }
 
-export function realPostersFirst(movies = []) {
-  return [...movies].sort((a, b) => Number(hasRealPoster(b)) - Number(hasRealPoster(a)));
+export function moviesWithRealPosters(movies = []) {
+  return movies.filter(hasRealPoster);
 }
 
 export function posterFallbackClass(movie) {

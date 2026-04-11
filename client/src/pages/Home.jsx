@@ -5,7 +5,7 @@ import { MovieCard } from '../components/MovieCard.jsx';
 import { SearchBar } from '../components/SearchBar.jsx';
 import { FilterBar } from '../components/FilterBar.jsx';
 import { Loader, MovieGridSkeleton } from '../components/Loader.jsx';
-import { realPostersFirst } from '../utils/poster.js';
+import { moviesWithRealPosters } from '../utils/poster.js';
 
 export function Home() {
   const { user } = useAuth();
@@ -28,7 +28,7 @@ export function Home() {
       if (genres.length) params.genre = genres.join(',');
       if (sort && sort !== 'newest') params.sort = sort;
       const { data } = await api.get('/movies', { params });
-      setMovies(realPostersFirst(data));
+      setMovies(moviesWithRealPosters(data));
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not load movies');
     } finally {
@@ -44,7 +44,7 @@ export function Home() {
     (async () => {
       try {
         const { data } = await api.get('/movies/top');
-        setTrending(realPostersFirst(data));
+        setTrending(moviesWithRealPosters(data));
       } catch {
         setTrending([]);
       }
@@ -60,7 +60,7 @@ export function Home() {
       setRecoLoading(true);
       try {
         const { data } = await api.get('/movies/recommendations');
-        setReco(realPostersFirst(data));
+        setReco(moviesWithRealPosters(data));
       } catch {
         setReco([]);
       } finally {
@@ -68,6 +68,12 @@ export function Home() {
       }
     })();
   }, [user]);
+
+  const removeUnavailablePoster = (id) => {
+    setMovies((items) => items.filter((m) => m._id !== id));
+    setTrending((items) => items.filter((m) => m._id !== id));
+    setReco((items) => items.filter((m) => m._id !== id));
+  };
 
   return (
     <div className="page home-page">
@@ -88,7 +94,7 @@ export function Home() {
           <div className="trending-scroll">
             {trending.map((m) => (
               <div key={m._id} className="trend-card-wrap">
-                <MovieCard movie={m} />
+                <MovieCard movie={m} onPosterUnavailable={removeUnavailablePoster} />
               </div>
             ))}
           </div>
@@ -103,7 +109,7 @@ export function Home() {
           ) : reco.length ? (
             <div className="movie-grid small">
               {reco.map((m) => (
-                <MovieCard key={m._id} movie={m} />
+                <MovieCard key={m._id} movie={m} onPosterUnavailable={removeUnavailablePoster} />
               ))}
             </div>
           ) : (
@@ -124,7 +130,7 @@ export function Home() {
         ) : (
           <div className="movie-grid">
             {movies.map((m) => (
-              <MovieCard key={m._id} movie={m} />
+              <MovieCard key={m._id} movie={m} onPosterUnavailable={removeUnavailablePoster} />
             ))}
           </div>
         )}
