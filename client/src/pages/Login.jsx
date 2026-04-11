@@ -16,7 +16,14 @@ export function Login() {
     setErr('');
     setBusy(true);
     try {
-      const { data } = await api.post('/auth/login', { email, password });
+      const { data } = await api.post('/auth/login', {
+        email: email.trim().toLowerCase(),
+        password,
+      });
+      if (!data?.token || !data?.user) {
+        setErr('Unexpected server response');
+        return;
+      }
       login(data.token, data.user);
       nav('/');
     } catch (ex) {

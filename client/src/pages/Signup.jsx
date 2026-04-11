@@ -17,7 +17,15 @@ export function Signup() {
     setErr('');
     setBusy(true);
     try {
-      const { data } = await api.post('/auth/register', { username, email, password });
+      const { data } = await api.post('/auth/register', {
+        username: username.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+      });
+      if (!data?.token || !data?.user) {
+        setErr('Unexpected server response');
+        return;
+      }
       login(data.token, data.user);
       nav('/');
     } catch (ex) {

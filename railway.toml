@@ -1,0 +1,13 @@
+# https://docs.railway.com/reference/config-as-code
+# Set MONGODB_URI (Atlas) or attach Railway MongoDB (DATABASE_URL) in the service variables.
+
+[build]
+builder = "NIXPACKS"
+# Ensure Vite (devDependency) is installed for the client build on Railway.
+buildCommand = "npm install && cd server && npm install && cd ../client && NPM_CONFIG_PRODUCTION=false npm install && npm run build"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"

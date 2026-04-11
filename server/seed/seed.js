@@ -6,96 +6,86 @@ import Movie from '../models/Movie.js';
 import Review from '../models/Review.js';
 import { connectDB } from '../config/db.js';
 import { recalculateMovieStats, sentimentFromRating } from '../utils/movieStats.js';
+import { MOVIES_RAW } from './moviesData.js';
 
-const posters = {
-  inception: 'https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg',
-  darkKnight: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-  interstellar: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
-  parasite: 'https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg',
-  spirited: 'https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg',
-  grandBudapest: 'https://image.tmdb.org/t/p/w500/eWdyYQreja6JGCzqHWXpWHDrrPo.jpg',
-  madMax: 'https://image.tmdb.org/t/p/w500/hA2ple9q4qnwxp3hKVNhPGipsin.jpg',
-  laLaLand: 'https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg',
-  getOut: 'https://image.tmdb.org/t/p/w500/tFXcEccSQMf3lfhfXKSU7i5Ujpt.jpg',
-  dune: 'https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg',
-};
+const tmdb = (path) => `https://image.tmdb.org/t/p/w500${path}`;
 
-const moviesData = [
-  {
-    title: 'Inception',
-    genre: ['Sci-Fi', 'Thriller'],
-    year: 2010,
-    description:
-      'A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.',
-    posterUrl: posters.inception,
-  },
-  {
-    title: 'The Dark Knight',
-    genre: ['Action', 'Crime'],
-    year: 2008,
-    description:
-      'Batman raises the stakes in his war on crime with the help of Lt. Jim Gordon and DA Harvey Dent, facing the anarchist Joker.',
-    posterUrl: posters.darkKnight,
-  },
-  {
-    title: 'Interstellar',
-    genre: ['Sci-Fi', 'Drama'],
-    year: 2014,
-    description:
-      'A team of explorers travel through a wormhole in space in an attempt to ensure humanity survival.',
-    posterUrl: posters.interstellar,
-  },
-  {
-    title: 'Parasite',
-    genre: ['Thriller', 'Drama'],
-    year: 2019,
-    description: 'Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.',
-    posterUrl: posters.parasite,
-  },
-  {
-    title: 'Spirited Away',
-    genre: ['Animation', 'Fantasy'],
-    year: 2001,
-    description:
-      'During her family move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches, and spirits.',
-    posterUrl: posters.spirited,
-  },
-  {
-    title: 'The Grand Budapest Hotel',
-    genre: ['Comedy', 'Drama'],
-    year: 2014,
-    description:
-      'A writer encounters the owner of an aging high-class hotel, who tells him of his early years serving as a lobby boy.',
-    posterUrl: posters.grandBudapest,
-  },
-  {
-    title: 'Mad Max: Fury Road',
-    genre: ['Action', 'Sci-Fi'],
-    year: 2015,
-    description: 'In a post-apocalyptic wasteland, Max helps a rebel warrior flee from a tyrannical leader.',
-    posterUrl: posters.madMax,
-  },
-  {
-    title: 'La La Land',
-    genre: ['Romance', 'Drama', 'Musical'],
-    year: 2016,
-    description: 'While navigating their careers in Los Angeles, a pianist and an actress fall in love.',
-    posterUrl: posters.laLaLand,
-  },
-  {
-    title: 'Get Out',
-    genre: ['Horror', 'Thriller'],
-    year: 2017,
-    description: 'A young African-American visits his white girlfriend parents for the weekend, where simmering uneasiness builds to a twisted truth.',
-    posterUrl: posters.getOut,
-  },
-  {
-    title: 'Dune',
-    genre: ['Sci-Fi', 'Adventure'],
-    year: 2021,
-    description: 'Paul Atreides leads a rebellion to restore his family noble house on the desert planet Arrakis.',
-    posterUrl: posters.dune,
-  },
+const REVIEW_LINES = [
+  'Absolutely loved it—would watch again opening night.',
+  'Solid film; a few slow spots but the payoff lands.',
+  'Popcorn-worthy from start to finish.',
+  'Great performances even when the script wobbles.',
+  'Not my usual genre but this one hooked me.',
+  'Cinematography is gorgeous; story is fine.',
+  'Rewatch potential is through the roof.',
+  'Emotional gut-punch in the best way.',
+  'Fun ride—turn your brain off and enjoy.',
+  'Thought-provoking without being preachy.',
+  'Soundtrack alone deserves five popcorns.',
+  'Pacing drags in the middle but sticks the landing.',
+  'Instant classic for me.',
+  'Overhyped but still pretty good.',
+  'Perfect Sunday afternoon watch.',
+  'Left the theater grinning.',
+  'Dark, bold, and unforgettable.',
+  'Would recommend to any film fan.',
+  'Some plot holes but I did not care.',
+  'The third act goes hard.',
+  'Heartfelt and surprisingly funny.',
+  'Edge of my seat the whole time.',
+  'Nostalgia hit me like a truck.',
+  'Deserved more awards buzz.',
+  'I get why people adore this.',
+  'Clever twists I did not see coming.',
+  'Character work is top tier.',
+  'A bit long but worth every minute.',
+  'Pure adrenaline.',
+  'Subtle and haunting.',
+  'Family watched together—big hit.',
+  'I cried. No shame.',
+  'Villain steals every scene.',
+  'World-building is incredible.',
+  'Quippy dialogue done right.',
+  'Better on a second viewing.',
+  'Could have been shorter, still great.',
+  'Ambitious and mostly pulls it off.',
+  'This is why I love movies.',
+  'Crowd was cheering in my screening.',
+  'Left me thinking for days.',
+  'Perfect cast chemistry.',
+  'Some cringe, mostly charm.',
+  'Would pair well with pizza.',
+  'Masterclass in tension.',
+  'Color and music are a vibe.',
+  'Went in skeptical—came out converted.',
+  'Deserves a big screen if you can.',
+  'Comfort movie unlocked.',
+  'Wild ending—still processing.',
+  'Reminded me why I use PopScore.',
+];
+
+function shuffleForSeed(items, seed) {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.abs((seed * 9301 + 49297 + i * 1009) % (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+const EXTRA_USERS = [
+  { username: 'popcornqueen', email: 'alice@popscore.com' },
+  { username: 'reelbuff', email: 'bob@popscore.com' },
+  { username: 'nightowl', email: 'casey@popscore.com' },
+  { username: 'cinephile_d', email: 'dana@popscore.com' },
+  { username: 'marathon_mia', email: 'mia@popscore.com' },
+  { username: 'silent_j', email: 'jay@popscore.com' },
+  { username: 'oscar_opus', email: 'opus@popscore.com' },
+  { username: 'trailerpark', email: 'tara@popscore.com' },
+  { username: 'imax_ivy', email: 'ivy@popscore.com' },
+  { username: 'filmnoir_ned', email: 'ned@popscore.com' },
+  { username: 'sundance_sam', email: 'sam@popscore.com' },
+  { username: 'blockbuster_bex', email: 'bex@popscore.com' },
 ];
 
 async function run() {
@@ -131,39 +121,70 @@ async function run() {
     favorites: [],
   });
 
+  const extras = [];
+  for (const u of EXTRA_USERS) {
+    extras.push(
+      await User.create({
+        username: u.username,
+        email: u.email,
+        password: userPass,
+        role: 'user',
+        favorites: [],
+      })
+    );
+  }
+
+  const reviewers = [demo, critic, ...extras];
+
   const inserted = [];
-  for (const m of moviesData) {
-    const doc = await Movie.create({ ...m, avgRating: 0, reviewCount: 0 });
+  for (const row of MOVIES_RAW) {
+    const [title, genre, year, description, posterPath] = row;
+    const doc = await Movie.create({
+      title,
+      genre,
+      year,
+      description,
+      posterUrl: tmdb(posterPath),
+      avgRating: 0,
+      reviewCount: 0,
+    });
     inserted.push(doc);
   }
 
-  const sampleReviews = [
-    { user: demo, movieIdx: 0, rating: 5, text: 'Mind-bending masterpiece. Nolan at his best!' },
-    { user: critic, movieIdx: 0, rating: 4, text: 'Complex but rewarding. Great visuals.' },
-    { user: demo, movieIdx: 1, rating: 5, text: 'Ledger Joker is iconic. Perfect comic book film.' },
-    { user: critic, movieIdx: 1, rating: 5, text: 'Dark, gripping, and endlessly rewatchable.' },
-    { user: demo, movieIdx: 2, rating: 5, text: 'Emotional sci-fi that sticks with you.' },
-    { user: critic, movieIdx: 3, rating: 4, text: 'Sharp social satire with perfect pacing.' },
-    { user: demo, movieIdx: 4, rating: 5, text: 'Pure magic. Miyazaki is a genius.' },
-    { user: critic, movieIdx: 5, rating: 4, text: 'Wes Anderson whimsy overload—in a good way.' },
-    { user: demo, movieIdx: 6, rating: 5, text: 'Non-stop adrenaline. Practical effects rock.' },
-    { user: critic, movieIdx: 7, rating: 4, text: 'Charming and bittersweet. Great music.' },
-    { user: demo, movieIdx: 8, rating: 4, text: 'Tense and clever. Peele nailed the tone.' },
-    { user: critic, movieIdx: 9, rating: 5, text: 'Epic scale and gorgeous sound design.' },
-    { user: admin, movieIdx: 2, rating: 3, text: 'Beautiful but the runtime is felt.' },
-    { user: demo, movieIdx: 3, rating: 5, text: 'Best picture deserved. Unpredictable twists.' },
-  ];
+  for (let mi = 0; mi < inserted.length; mi++) {
+    const movie = inserted[mi];
+    const want = Math.min(7 + (mi % 6), reviewers.length);
+    const picks = shuffleForSeed(reviewers, mi + 1).slice(0, want);
+    for (let ri = 0; ri < picks.length; ri++) {
+      const u = picks[ri];
+      const rating = 1 + ((mi * 7 + ri * 11 + mi * ri) % 5);
+      const text = REVIEW_LINES[(mi + ri * 3) % REVIEW_LINES.length];
+      const likes = (mi * 17 + ri * 9) % 48;
+      await Review.create({
+        userId: u._id,
+        movieId: movie._id,
+        rating,
+        text,
+        likes,
+        sentiment: sentimentFromRating(rating),
+      });
+    }
+  }
 
-  let likeCounter = 0;
-  for (const s of sampleReviews) {
-    const movie = inserted[s.movieIdx];
+  const adminSlots = 10;
+  for (let k = 0; k < adminSlots; k++) {
+    const idx = Math.min(inserted.length - 1, Math.floor(((k + 1) / (adminSlots + 1)) * inserted.length));
+    const movie = inserted[idx];
+    const exists = await Review.findOne({ userId: admin._id, movieId: movie._id });
+    if (exists) continue;
+    const rating = 3 + (idx % 3);
     await Review.create({
-      userId: s.user._id,
+      userId: admin._id,
       movieId: movie._id,
-      rating: s.rating,
-      text: s.text,
-      likes: likeCounter++ % 7,
-      sentiment: sentimentFromRating(s.rating),
+      rating,
+      text: 'Admin note: strong catalog title—worth keeping in rotation.',
+      likes: (idx % 20) + 2,
+      sentiment: sentimentFromRating(rating),
     });
   }
 
@@ -171,14 +192,26 @@ async function run() {
     await recalculateMovieStats(movie._id);
   }
 
-  admin.favorites = [inserted[0]._id, inserted[1]._id];
-  demo.favorites = [inserted[2]._id, inserted[4]._id, inserted[7]._id];
+  admin.favorites = [inserted[0]._id, inserted[1]._id, inserted[4]._id];
+  demo.favorites = [inserted[2]._id, inserted[5]._id, inserted[7]._id, inserted[12]._id];
+  critic.favorites = [inserted[3]._id, inserted[8]._id, inserted[11]._id];
+  if (extras[0]) extras[0].favorites = [inserted[6]._id, inserted[10]._id];
+  if (extras[1]) extras[1].favorites = [inserted[9]._id, inserted[14]._id];
   await admin.save();
   await demo.save();
+  await critic.save();
+  for (const u of extras) {
+    if (u.favorites?.length) await u.save();
+  }
 
+  const reviewCount = await Review.countDocuments();
   console.log('Seed complete.');
-  console.log('Admin: admin@popscore.com / admin123');
-  console.log('Demo: demo@popscore.com / demo123');
+  console.log(`Movies: ${inserted.length}  Reviews: ${reviewCount}`);
+  console.log('--- ADMIN (full catalog access) ---');
+  console.log('  Email:    admin@popscore.com');
+  console.log('  Password: admin123');
+  console.log('--- Demo users (password: demo123 for all below) ---');
+  console.log('  demo@popscore.com, film@popscore.com, alice@popscore.com, … (+10 more in seed)');
   await mongoose.disconnect();
 }
 

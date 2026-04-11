@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import api from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { PopcornScore } from '../components/PopcornRating.jsx';
+import { PopMeter } from '../components/PopMeter.jsx';
 import { ReviewList } from '../components/ReviewList.jsx';
 import { ReviewForm } from '../components/ReviewForm.jsx';
 import { DetailSkeleton } from '../components/Loader.jsx';
@@ -186,6 +187,7 @@ export function MovieDetails() {
           <div className="score-row">
             <PopcornScore value={movie.avgRating} reviewCount={movie.reviewCount} />
           </div>
+          <PopMeter avgRating={movie.avgRating} reviewCount={movie.reviewCount} year={movie.year} />
           <p className="desc">{movie.description}</p>
           <RatingBreakdown breakdown={bd} total={total} />
         </div>

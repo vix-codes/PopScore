@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api/client.js';
 import { MovieGridSkeleton } from '../components/Loader.jsx';
+import { PopMeter } from '../components/PopMeter.jsx';
 
 const emptyForm = {
   title: '',
@@ -180,6 +181,7 @@ export function Admin() {
                 <span className="meta">
                   {m.year} · {(m.genre || []).join(', ')}
                 </span>
+                <PopMeter avgRating={m.avgRating} reviewCount={m.reviewCount} year={m.year} compact />
               </div>
               <div className="row-actions">
                 <button type="button" className="btn btn-ghost" onClick={() => startEdit(m)} disabled={busy}>
@@ -240,7 +242,7 @@ export function Admin() {
           display: grid;
           grid-template-columns: 56px 1fr auto;
           gap: 1rem;
-          align-items: center;
+          align-items: start;
           padding: 0.75rem 1rem;
         }
         .admin-row:hover {

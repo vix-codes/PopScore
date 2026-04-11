@@ -5,12 +5,17 @@ const GENRES = [
   'Comedy',
   'Crime',
   'Drama',
+  'Family',
   'Fantasy',
   'Horror',
+  'Music',
   'Musical',
+  'Mystery',
   'Romance',
   'Sci-Fi',
   'Thriller',
+  'War',
+  'Western',
 ];
 
 const SORTS = [

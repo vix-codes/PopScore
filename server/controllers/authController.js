@@ -9,28 +9,34 @@ const signToken = (user) =>
     { expiresIn: '7d' }
   );
 
+function toUserPayload(user) {
+  return {
+    id: user._id.toString(),
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    favorites: (user.favorites || []).map((x) => x.toString()),
+  };
+}
+
 export async function register(req, res) {
   try {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
       return res.status(400).json({ message: 'Username, email, and password required' });
     }
-    const exists = await User.findOne({ $or: [{ email }, { username }] });
+    const em = String(email).toLowerCase().trim();
+    const un = String(username).trim();
+    const exists = await User.findOne({ $or: [{ email: em }, { username: un }] });
     if (exists) {
       return res.status(400).json({ message: 'User already exists' });
     }
     const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ username, email, password: hashed, role: 'user' });
+    const user = await User.create({ username: un, email: em, password: hashed, role: 'user' });
     const token = signToken(user);
     res.status(201).json({
       token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        favorites: (user.favorites || []).map((x) => x.toString()),
-      },
+      user: toUserPayload(user),
     });
   } catch (e) {
     res.status(500).json({ message: e.message || 'Server error' });
@@ -43,20 +49,15 @@ export async function login(req, res) {
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password required' });
     }
-    const user = await User.findOne({ email });
+    const em = String(email).toLowerCase().trim();
+    const user = await User.findOne({ email: em });
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     const token = signToken(user);
     res.json({
       token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        favorites: (user.favorites || []).map((x) => x.toString()),
-      },
+      user: toUserPayload(user),
     });
   } catch (e) {
     res.status(500).json({ message: e.message || 'Server error' });

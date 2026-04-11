@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { PopcornRating } from './PopcornRating.jsx';
+import { PopMeter } from './PopMeter.jsx';
 
 export function MovieCard({ movie }) {
   const id = movie._id;
@@ -22,6 +23,12 @@ export function MovieCard({ movie }) {
             <PopcornRating value={rounded} readOnly size="sm" />
             <span className="avg-num">{(Number(movie.avgRating) || 0).toFixed(1)}</span>
           </div>
+          <PopMeter
+            avgRating={movie.avgRating}
+            reviewCount={movie.reviewCount}
+            year={movie.year}
+            compact
+          />
         </div>
       </article>
       <style>{`
