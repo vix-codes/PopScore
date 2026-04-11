@@ -1,0 +1,13 @@
+{
+  "name": "popscore",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "concurrently \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "dev": "npm run start",
+    "install:all": "npm --prefix server install && npm --prefix client install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
