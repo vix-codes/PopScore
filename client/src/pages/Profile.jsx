@@ -69,7 +69,7 @@ export function Profile() {
                     />
                   )}
                   <span className="pr-poster-fallback" aria-hidden="true">
-                    {r.movieId?.title || 'Movie'}
+                    Poster unavailable
                   </span>
                 </span>
                 <div>

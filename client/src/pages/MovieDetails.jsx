@@ -180,7 +180,7 @@ export function MovieDetails() {
               />
             )}
             <div className="detail-poster-fallback" aria-hidden="true">
-              <span>{movie.title}</span>
+              <span>Poster unavailable</span>
             </div>
           </div>
           {user && (
@@ -276,9 +276,11 @@ export function MovieDetails() {
         }
         .detail-poster-fallback span {
           font-family: var(--font-display);
-          font-size: clamp(1.4rem, 4vw, 2.3rem);
+          font-size: clamp(1rem, 2.4vw, 1.45rem);
           font-weight: 800;
           line-height: 1.12;
+          color: var(--accent-2);
+          text-transform: uppercase;
         }
         .poster-fallback-active .detail-poster-fallback {
           display: grid;

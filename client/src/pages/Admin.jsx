@@ -180,7 +180,7 @@ export function Admin() {
                 {hasPoster(m) && (
                   <img src={posterSrc(m)} alt="" className="thumb" onError={usePosterFallback} />
                 )}
-                <span className="thumb-fallback" aria-hidden="true">{m.title}</span>
+                <span className="thumb-fallback" aria-hidden="true">Poster unavailable</span>
               </div>
               <div className="info">
                 <strong>{m.title}</strong>

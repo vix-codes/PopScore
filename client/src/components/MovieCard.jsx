@@ -21,7 +21,7 @@ export function MovieCard({ movie }) {
             />
           )}
           <div className="poster-fallback" aria-hidden="true">
-            <span>{movie.title}</span>
+            <span>Poster unavailable</span>
           </div>
           <div className="poster-shine" />
         </div>
@@ -82,9 +82,11 @@ export function MovieCard({ movie }) {
         }
         .poster-fallback span {
           font-family: var(--font-display);
-          font-size: clamp(1rem, 1.8vw, 1.45rem);
+          font-size: clamp(0.95rem, 1.4vw, 1.15rem);
           font-weight: 800;
           line-height: 1.15;
+          color: var(--accent-2);
+          text-transform: uppercase;
         }
         .poster-fallback-active .poster-fallback {
           display: grid;

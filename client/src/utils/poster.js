@@ -3,7 +3,7 @@ export function posterSrc(movie) {
 }
 
 export function hasPoster(movie) {
-  return Boolean(movie?.posterUrl);
+  return hasRealPoster(movie);
 }
 
 export function hasRealPoster(movie) {
