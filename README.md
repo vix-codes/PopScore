@@ -95,7 +95,8 @@ Create **`server/.env`** (never commit real secrets). Copy from `server/.env.exa
 | Variable | Description |
 |----------|-------------|
 | `PORT` | API port (default **5000**) |
-| `MONGODB_URI` | Full MongoDB connection string (include database name in path, e.g. `.../popscore?...`). **`DATABASE_URL` is accepted as an alias** (some hosts use that name). |
+| `MONGODB_URI` | Full MongoDB connection string. **`DATABASE_URL`** and **`MONGO_URI`** are accepted as aliases. |
+| `MONGODB_DB_NAME` | Optional. Defaults to **`popscore`**. Use if your URI has no database in the path (common Atlas copy-paste ends with `...net/?appName=...`). |
 | `JWT_SECRET` | Strong secret for signing tokens |
 | `CLIENT_ORIGIN` | Optional. Comma-separated **frontend** URLs allowed by CORS (e.g. your Vercel app). Local `localhost:5173` is always allowed. |
 
@@ -331,6 +332,7 @@ Redeploy after saving variables. If `MONGODB_URI` is missing in production, the 
 | Issue | What to check |
 |--------|----------------|
 | `ECONNREFUSED 127.0.0.1:27017` on Railway / Render | **`MONGODB_URI`** (or **`DATABASE_URL`**) not set in the service environment — add your Atlas connection string |
+| Railway / Atlas “database missing” or empty data | Put **`/popscore`** before `?` in the URI, or set **`MONGODB_DB_NAME=popscore`** in Railway. Then run **`npm run seed`** once so collections exist. |
 | `MongoServerError` / connection refused | `MONGODB_URI`, Atlas IP allowlist, user/password |
 | 401 on protected routes | Token in `localStorage`, `JWT_SECRET` unchanged between login and verify |
 | CORS errors / login works locally but not on Vercel | Set **`CLIENT_ORIGIN`** on the API to your site URL; set **`VITE_API_URL`** when building the client for split hosting |
