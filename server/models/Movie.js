@@ -1,7 +1,20 @@
-// Placeholder model for future MongoDB integration.
-const Movie = {
-  name: "Movie",
-  fields: ["title", "rating", "description"]
-};
+const mongoose = require("mongoose");
 
-module.exports = Movie;
+const movieSchema = new mongoose.Schema(
+  {
+    avgRating: {
+      type: Number,
+      default: 0,
+    },
+    reviewCount: {
+      type: Number,
+      default: 0,
+    },
+  },
+  {
+    strict: false,
+    collection: "movies",
+  }
+);
+
+module.exports = mongoose.model("Movie", movieSchema);

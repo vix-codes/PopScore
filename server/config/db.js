@@ -1,14 +1,14 @@
+// config/db.js
 const mongoose = require("mongoose");
 
-async function connectDB() {
-  const mongoURI = process.env.MONGO_URI;
-
-  if (!mongoURI) {
-    throw new Error("MONGO_URI is not set in environment variables.");
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB Connected ✅");
+  } catch (error) {
+    console.error("DB Error ❌", error);
+    process.exit(1);
   }
-
-  await mongoose.connect(mongoURI);
-  console.log("MongoDB connected.");
-}
+};
 
 module.exports = connectDB;
