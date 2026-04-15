@@ -3,6 +3,7 @@ import User from '../models/User.js';
 import Movie from '../models/Movie.js';
 import Review from '../models/Review.js';
 import { recalculateMovieStats, sentimentFromRating } from '../utils/movieStats.js';
+import { generateReviewSummaryText } from '../utils/reviewSummary.js';
 import { MOVIES_RAW } from './moviesData.js';
 
 const tmdb = (path) => `https://image.tmdb.org/t/p/w500${path}`;
@@ -73,57 +74,18 @@ const BROKEN_TMDB_POSTERS = new Set([
 ]);
 
 const REVIEW_LINES = [
-  'Absolutely loved it—would watch again opening night.',
-  'Solid film; a few slow spots but the payoff lands.',
-  'Popcorn-worthy from start to finish.',
-  'Great performances even when the script wobbles.',
-  'Not my usual genre but this one hooked me.',
-  'Cinematography is gorgeous; story is fine.',
-  'Rewatch potential is through the roof.',
-  'Emotional gut-punch in the best way.',
-  'Fun ride—turn your brain off and enjoy.',
-  'Thought-provoking without being preachy.',
-  'Soundtrack alone deserves five popcorns.',
-  'Pacing drags in the middle but sticks the landing.',
-  'Instant classic for me.',
-  'Overhyped but still pretty good.',
-  'Perfect Sunday afternoon watch.',
-  'Left the theater grinning.',
-  'Dark, bold, and unforgettable.',
-  'Would recommend to any film fan.',
-  'Some plot holes but I did not care.',
-  'The third act goes hard.',
-  'Heartfelt and surprisingly funny.',
-  'Edge of my seat the whole time.',
-  'Nostalgia hit me like a truck.',
-  'Deserved more awards buzz.',
-  'I get why people adore this.',
-  'Clever twists I did not see coming.',
-  'Character work is top tier.',
-  'A bit long but worth every minute.',
-  'Pure adrenaline.',
-  'Subtle and haunting.',
-  'Family watched together—big hit.',
-  'I cried. No shame.',
-  'Villain steals every scene.',
-  'World-building is incredible.',
-  'Quippy dialogue done right.',
-  'Better on a second viewing.',
-  'Could have been shorter, still great.',
-  'Ambitious and mostly pulls it off.',
-  'This is why I love movies.',
-  'Crowd was cheering in my screening.',
-  'Left me thinking for days.',
-  'Perfect cast chemistry.',
-  'Some cringe, mostly charm.',
-  'Would pair well with pizza.',
-  'Masterclass in tension.',
-  'Color and music are a vibe.',
-  'Went in skeptical—came out converted.',
-  'Deserves a big screen if you can.',
-  'Comfort movie unlocked.',
-  'Wild ending—still processing.',
-  'Reminded me why I use PopScore.',
+  'The visuals were the first thing that grabbed me, but what really sold the movie was how confidently it balanced spectacle with character beats. A couple scenes in the middle wandered, yet the finale landed hard enough that I was still thinking about it on the drive home.',
+  'I expected a lightweight popcorn watch and ended up getting something much more emotionally grounded. The performances made even the quieter conversations feel important, and the soundtrack kept everything moving without overwhelming the story.',
+  'This one started a little slowly for me, but once the central conflict locked in I was completely on board. The movie looks gorgeous, the humor lands more often than not, and the final act delivers exactly the kind of payoff I hoped for.',
+  'The premise is familiar, yet the filmmaking gives it a lot more personality than I expected. I especially liked the production design and how much care went into the supporting cast, because even small scenes felt memorable.',
+  'There are a few plot turns that do not fully hold up if you pick them apart, but I had such a good time with the pacing and energy that it barely mattered. It is the kind of movie I would happily rewatch with friends on a weekend.',
+  'I was surprised by how heartfelt this turned out to be. Underneath the genre stuff there is a really sincere story about identity and belonging, and that emotional layer kept the whole experience from feeling disposable.',
+  'The action is sharp, easy to follow, and staged with enough personality that every set piece feels distinct. What pushed it over the top for me, though, was the lead performance, which gave the movie way more charm than a lesser version would have had.',
+  'This movie absolutely nails its atmosphere. The color palette, music choices, and slow-building tension create a mood that sticks with you, and even when the story gets a little messy the overall vibe is strong enough to carry it.',
+  'What I liked most was how confident the movie felt about its own tone. It can be funny, dramatic, and a little weird without losing the thread, which made it stand out from more generic entries in the same lane.',
+  'I do think the runtime could have been trimmed, especially around the midpoint, but the emotional payoff and character work make the extra length easier to forgive. By the end I was fully invested in where everyone landed.',
+  'This was a crowd-pleaser in the best sense of the phrase. Big moments got real reactions, but the smaller details were just as satisfying, especially the visual callbacks and the way the script paid off setup from earlier scenes.',
+  'I went in with high expectations because people kept recommending it to me, and thankfully it mostly delivered. The direction is stylish without feeling showy, and the ending gives the story enough bite to stay memorable.',
 ];
 
 function shuffleForSeed(items, seed) {
@@ -233,13 +195,16 @@ export async function seedDatabase(opts = {}) {
       const rating = 1 + ((mi * 7 + ri * 11 + mi * ri) % 5);
       const text = REVIEW_LINES[(mi + ri * 3) % REVIEW_LINES.length];
       const likes = (mi * 17 + ri * 9) % 48;
+      const sentiment = sentimentFromRating(rating);
+      const summaryText = await generateReviewSummaryText({ text, rating, sentiment, apiKey: '' });
       await Review.create({
         userId: u._id,
         movieId: movie._id,
         rating,
         text,
+        summaryText,
         likes,
-        sentiment: sentimentFromRating(rating),
+        sentiment,
       });
     }
   }
@@ -256,6 +221,7 @@ export async function seedDatabase(opts = {}) {
       movieId: movie._id,
       rating,
       text: 'Admin note: strong catalog title—worth keeping in rotation.',
+      summaryText: 'they think it is worth keeping in rotation.',
       likes: (idx % 20) + 2,
       sentiment: sentimentFromRating(rating),
     });

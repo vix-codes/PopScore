@@ -20,6 +20,7 @@ export function Profile() {
   const { user, refreshUser } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState({});
 
   useEffect(() => {
     refreshUser();
@@ -79,7 +80,17 @@ export function Profile() {
                 <PopcornRating value={r.rating} readOnly size="sm" />
                 <SentimentBadge sentiment={r.sentiment} />
               </div>
-              {r.text && <p className="pr-text">{r.text}</p>}
+              {r.summary && <p className="pr-summary">{r.summary}</p>}
+              {r.text && expanded[r._id] && <p className="pr-text">{r.text}</p>}
+              {r.text && (
+                <button
+                  type="button"
+                  className="pr-toggle"
+                  onClick={() => setExpanded((current) => ({ ...current, [r._id]: !current[r._id] }))}
+                >
+                  {expanded[r._id] ? 'Hide full review' : 'Read full review'}
+                </button>
+              )}
             </li>
           ))}
         </ul>
@@ -194,11 +205,26 @@ export function Profile() {
           gap: 0.5rem;
           margin-bottom: 0.35rem;
         }
+        .pr-summary {
+          margin: 0 0 0.4rem;
+          font-size: 0.92rem;
+          color: var(--text);
+          line-height: 1.5;
+        }
         .pr-text {
           margin: 0;
           font-size: 0.9rem;
           color: var(--text-muted);
           line-height: 1.5;
+        }
+        .pr-toggle {
+          margin-top: 0.55rem;
+          background: transparent;
+          border: 0;
+          padding: 0;
+          color: var(--accent);
+          cursor: pointer;
+          font: inherit;
         }
         .sb {
           font-size: 0.65rem;

@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import Review from '../models/Review.js';
 import Movie from '../models/Movie.js';
+import { formatReviewSummary } from '../utils/reviewSummary.js';
 
 export async function profile(req, res) {
   try {
@@ -18,7 +19,12 @@ export async function myReviews(req, res) {
       .populate('movieId', 'title posterUrl year')
       .sort({ createdAt: -1 })
       .lean();
-    res.json(reviews);
+    res.json(
+      reviews.map((review) => ({
+        ...review,
+        summary: formatReviewSummary('You', review.summaryText, review.rating, review.sentiment, review.text),
+      }))
+    );
   } catch (e) {
     res.status(500).json({ message: e.message || 'Server error' });
   }

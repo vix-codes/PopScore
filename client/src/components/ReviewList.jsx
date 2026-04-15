@@ -27,6 +27,7 @@ export function ReviewList({
   const [liking, setLiking] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [deleting, setDeleting] = useState(null);
+  const [expanded, setExpanded] = useState({});
 
   const handleLike = async (reviewId) => {
     if (!user) return;
@@ -83,8 +84,18 @@ export function ReviewList({
                 <div className="rev-rating-row">
                   <PopcornRating value={r.rating} readOnly size="sm" />
                 </div>
-                {r.text && <p className="rev-text">{r.text}</p>}
+                {r.summary && <p className="rev-summary">{r.summary}</p>}
+                {r.text && expanded[r._id] && <p className="rev-text">{r.text}</p>}
                 <div className="rev-actions">
+                  {r.text && (
+                    <button
+                      type="button"
+                      className="btn btn-ghost"
+                      onClick={() => setExpanded((current) => ({ ...current, [r._id]: !current[r._id] }))}
+                    >
+                      {expanded[r._id] ? 'Hide full review' : 'Read full review'}
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="btn btn-ghost like-btn"
@@ -198,6 +209,12 @@ export function ReviewList({
           margin-bottom: 0.5rem;
         }
         .rev-text {
+          margin: 0 0 0.75rem;
+          line-height: 1.55;
+          color: var(--text);
+          font-size: 0.95rem;
+        }
+        .rev-summary {
           margin: 0 0 0.75rem;
           line-height: 1.55;
           color: var(--text-muted);

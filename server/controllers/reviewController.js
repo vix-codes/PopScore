@@ -1,6 +1,26 @@
 import Review from '../models/Review.js';
 import Movie from '../models/Movie.js';
 import { recalculateMovieStats, sentimentFromRating } from '../utils/movieStats.js';
+import { formatReviewSummary, generateReviewSummaryText } from '../utils/reviewSummary.js';
+
+function serializeReview(review) {
+  const username = review.userId?.username || review.username || 'User';
+  const userId = review.userId?._id || review.userId;
+
+  return {
+    _id: review._id,
+    userId,
+    username,
+    movieId: review.movieId,
+    rating: review.rating,
+    text: review.text,
+    summary: formatReviewSummary(username, review.summaryText, review.rating, review.sentiment, review.text),
+    summaryText: review.summaryText || '',
+    likes: review.likes,
+    sentiment: review.sentiment,
+    createdAt: review.createdAt,
+  };
+}
 
 export async function listByMovie(req, res) {
   try {
@@ -9,17 +29,7 @@ export async function listByMovie(req, res) {
       .populate('userId', 'username')
       .sort({ createdAt: -1 })
       .lean();
-    const mapped = reviews.map((r) => ({
-      _id: r._id,
-      userId: r.userId?._id || r.userId,
-      username: r.userId?.username || 'User',
-      movieId: r.movieId,
-      rating: r.rating,
-      text: r.text,
-      likes: r.likes,
-      sentiment: r.sentiment,
-      createdAt: r.createdAt,
-    }));
+    const mapped = reviews.map(serializeReview);
     res.json(mapped);
   } catch (e) {
     res.status(500).json({ message: e.message || 'Server error' });
@@ -37,6 +47,7 @@ export async function createReview(req, res) {
     if (!movie) return res.status(404).json({ message: 'Movie not found' });
 
     const sentiment = sentimentFromRating(r);
+    const summaryText = await generateReviewSummaryText({ text, rating: r, sentiment });
     let review;
     try {
       review = await Review.create({
@@ -44,6 +55,7 @@ export async function createReview(req, res) {
         movieId,
         rating: r,
         text: text || '',
+        summaryText,
         likes: 0,
         sentiment,
       });
@@ -57,17 +69,7 @@ export async function createReview(req, res) {
     const populated = await Review.findById(review._id)
       .populate('userId', 'username')
       .lean();
-    res.status(201).json({
-      _id: populated._id,
-      userId: populated.userId._id,
-      username: populated.userId.username,
-      movieId: populated.movieId,
-      rating: populated.rating,
-      text: populated.text,
-      likes: populated.likes,
-      sentiment: populated.sentiment,
-      createdAt: populated.createdAt,
-    });
+    res.status(201).json(serializeReview(populated));
   } catch (e) {
     res.status(500).json({ message: e.message || 'Server error' });
   }
@@ -88,22 +90,17 @@ export async function updateReview(req, res) {
       review.sentiment = sentimentFromRating(r);
     }
     if (text != null) review.text = text;
+    review.summaryText = await generateReviewSummaryText({
+      text: review.text,
+      rating: review.rating,
+      sentiment: review.sentiment,
+    });
     await review.save();
     await recalculateMovieStats(review.movieId);
     const populated = await Review.findById(review._id)
       .populate('userId', 'username')
       .lean();
-    res.json({
-      _id: populated._id,
-      userId: populated.userId._id,
-      username: populated.userId.username,
-      movieId: populated.movieId,
-      rating: populated.rating,
-      text: populated.text,
-      likes: populated.likes,
-      sentiment: populated.sentiment,
-      createdAt: populated.createdAt,
-    });
+    res.json(serializeReview(populated));
   } catch (e) {
     res.status(500).json({ message: e.message || 'Server error' });
   }

@@ -139,21 +139,23 @@ export async function recommendations(req, res) {
   try {
     const userId = req.userId;
     const reviews = await Review.find({ userId }).populate('movieId', 'genre').lean();
-    const genreCount = {};
+    const genreScores = {};
     for (const r of reviews) {
       const glist = r.movieId?.genre || [];
+      const weight = Math.max(Number(r.rating) || 0, 1);
       for (const g of glist) {
-        genreCount[g] = (genreCount[g] || 0) + 1;
+        genreScores[g] = (genreScores[g] || 0) + weight;
       }
     }
-    const topGenres = Object.entries(genreCount)
+    const topGenres = Object.entries(genreScores)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
       .map(([g]) => g);
+    const favoriteGenre = topGenres[0] || null;
 
     if (!topGenres.length) {
       const fallback = await Movie.find(realPosterFilter).sort({ avgRating: -1 }).limit(6).lean();
-      return res.json(fallback);
+      return res.json({ favoriteGenre: null, movies: fallback });
     }
 
     const reviewedMovieIds = reviews
@@ -172,7 +174,7 @@ export async function recommendations(req, res) {
       .limit(12)
       .lean();
 
-    res.json(candidates.slice(0, 8));
+    res.json({ favoriteGenre, movies: candidates.slice(0, 8) });
   } catch (e) {
     res.status(500).json({ message: e.message || 'Server error' });
   }

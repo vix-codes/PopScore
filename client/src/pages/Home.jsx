@@ -15,6 +15,7 @@ export function Home() {
   const [movies, setMovies] = useState([]);
   const [trending, setTrending] = useState([]);
   const [reco, setReco] = useState([]);
+  const [favoriteGenre, setFavoriteGenre] = useState('');
   const [loading, setLoading] = useState(true);
   const [recoLoading, setRecoLoading] = useState(false);
   const [err, setErr] = useState('');
@@ -54,15 +55,18 @@ export function Home() {
   useEffect(() => {
     if (!user) {
       setReco([]);
+      setFavoriteGenre('');
       return;
     }
     (async () => {
       setRecoLoading(true);
       try {
         const { data } = await api.get('/movies/recommendations');
-        setReco(moviesWithRealPosters(data));
+        setReco(moviesWithRealPosters(data.movies || []));
+        setFavoriteGenre(data.favoriteGenre || '');
       } catch {
         setReco([]);
+        setFavoriteGenre('');
       } finally {
         setRecoLoading(false);
       }
@@ -93,6 +97,7 @@ export function Home() {
       {user && (
         <section className="reco-block">
           <h2 className="section-title">For you</h2>
+          {favoriteGenre && <p className="genre-note">You rate <strong>{favoriteGenre}</strong> highest right now.</p>}
           {recoLoading ? (
             <Loader label="Finding picks..." />
           ) : reco.length ? (
@@ -143,6 +148,13 @@ export function Home() {
         }
         .reco-block {
           margin-bottom: 2.5rem;
+        }
+        .genre-note {
+          margin: -0.2rem 0 1rem;
+          color: var(--text-muted);
+        }
+        .genre-note strong {
+          color: var(--accent-2);
         }
         .movie-grid {
           display: grid;
